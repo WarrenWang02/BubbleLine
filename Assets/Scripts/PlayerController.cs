@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
         if (moveInput != Vector2.zero)
         {
             Vector3 targetDirection = new Vector3(moveInput.x, 0, moveInput.y);
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+            Quaternion targetRotation = Quaternion.LookRotation(-targetDirection);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
     }
