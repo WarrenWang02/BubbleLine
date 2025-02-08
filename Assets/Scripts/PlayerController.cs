@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;             // Speed of the player movement
     private Rigidbody rb;                    // Rigidbody for physics-based movement
 
+    public float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
+
     void Awake()
     {
         playerInput = new PlayerInputActions();  // Initialize the input actions
@@ -28,16 +30,19 @@ public class PlayerController : MonoBehaviour
         playerInput.Disable();                      // Disable input listening
     }
 
-    void Update()
-    {
-        // Can handle non-physics related updates here if needed
-    }
-
     void FixedUpdate()
     {
         // Convert 2D input to 3D movement (X and Z axes)
         Vector3 movement = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);  // Apply movement using Rigidbody
+
+        // Rotate player to face movement direction
+        if (moveInput != Vector2.zero)
+        {
+            Vector3 targetDirection = new Vector3(moveInput.x, 0, moveInput.y);
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+        }
     }
 
     // This method is called when Move input is detected
