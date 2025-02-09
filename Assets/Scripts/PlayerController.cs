@@ -7,8 +7,9 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;               // Stores input values from WASD/Arrow keys
     public float moveSpeed = 5f;             // Speed of the player movement
     private Rigidbody rb;                    // Rigidbody for physics-based movement
-
+    public Transform playerIndicator;    // Reference to the indicator object
     public float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
+    public InteractionSystem interactionSystem;  // Reference to the InteractionSystem
 
     void Awake()
     {
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     {
         playerInput.Player.Move.performed += Move;   // Subscribe to the Move input action
         playerInput.Player.Move.canceled += Move;    // Handle input stop
+        playerInput.Player.Interact.performed += Interact;  // Trigger interaction
         playerInput.Enable();                        // Enable input listening
     }
 
@@ -27,6 +29,7 @@ public class PlayerController : MonoBehaviour
     {
         playerInput.Player.Move.performed -= Move;  // Unsubscribe to prevent memory leaks
         playerInput.Player.Move.canceled -= Move;
+        playerInput.Player.Interact.performed -= Interact;
         playerInput.Disable();                      // Disable input listening
     }
 
@@ -49,5 +52,10 @@ public class PlayerController : MonoBehaviour
     private void Move(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();  // Read input from the action
+    }
+    private void Interact(InputAction.CallbackContext context)
+    {
+        // Trigger interaction through the InteractionSystem
+        interactionSystem.TryInteract(playerIndicator.position);
     }
 }
