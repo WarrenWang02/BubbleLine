@@ -8,6 +8,7 @@ public class InteractionSystem : MonoBehaviour
 
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
     private GameObject heldMachinePrefab = null;                // Store the picked-up machine
+    private string heldMachineName = "";                        // Store the name of the picked-up machine
 
     void Start()
     {
@@ -35,9 +36,8 @@ public class InteractionSystem : MonoBehaviour
             GameObject machineToPick = gridObjects[indicatorCellPosition];
             Debug.Log("Picked up: " + machineToPick.name);
 
-            heldMachinePrefab = machineToPick;     // Store the picked-up machine
-            heldMachinePrefab.SetActive(false);    // Deactivate the machine instead of destroying
-
+            heldMachineName = machineToPick.name.Replace("(Clone)", "");  // Store the name of the machine
+            Destroy(machineToPick);                     // Remove from the scene
             gridObjects.Remove(indicatorCellPosition);  // Remove from the dictionary
         }
         else
@@ -49,19 +49,27 @@ public class InteractionSystem : MonoBehaviour
     // This method is called when the player presses the drop button (C)
     public void TryDrop(Vector3 indicatorWorldPosition)
     {
-        if (heldMachinePrefab != null)
+        if (!string.IsNullOrEmpty(heldMachineName))
         {
             Vector3Int dropCellPosition = grid.WorldToCell(indicatorWorldPosition);
 
+            // Check if the grid position is empty
             if (!gridObjects.ContainsKey(dropCellPosition))
             {
-                GameObject newMachine = Instantiate(heldMachinePrefab, grid.GetCellCenterWorld(dropCellPosition), Quaternion.identity, machinesContainer);
-                newMachine.SetActive(true);  // Reactivate the machine
+                // Instantiate a new prefab using the stored machine name
+                GameObject prefabToDrop = Resources.Load<GameObject>(heldMachineName);
+                if (prefabToDrop != null)
+                {
+                    GameObject newMachine = Instantiate(prefabToDrop, grid.GetCellCenterWorld(dropCellPosition), Quaternion.identity, machinesContainer);
+                    gridObjects.Add(dropCellPosition, newMachine);
+                    Debug.Log("Dropped machine at: " + dropCellPosition);
+                }
+                else
+                {
+                    Debug.Log("Prefab not found in Resources folder: " + heldMachineName);
+                }
 
-                gridObjects.Add(dropCellPosition, newMachine);
-                Debug.Log("Dropped machine at: " + dropCellPosition);
-
-                heldMachinePrefab = null;  // Clear the held machine after dropping
+                heldMachineName = "";  // Clear the held machine name after dropping
             }
             else
             {
