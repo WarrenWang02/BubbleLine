@@ -5,11 +5,11 @@ public class PlayerController : MonoBehaviour
 {
     private PlayerInputActions playerInput;  // Reference to the input actions
     private Vector2 moveInput;               // Stores input values from WASD/Arrow keys
-    public float moveSpeed = 5f;             // Speed of the player movement
+    [SerializeField] private float moveSpeed = 5f;             // Speed of the player movement
     private Rigidbody rb;                    // Rigidbody for physics-based movement
-    public Transform playerIndicator;    // Reference to the indicator object
-    public float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
-    public InteractionSystem interactionSystem;  // Reference to the InteractionSystem
+    [SerializeField] private Transform playerIndicator;    // Reference to the indicator object
+    [SerializeField] private float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
+    [SerializeField] private InteractionSystem interactionSystem;  // Reference to the InteractionSystem
 
     void Awake()
     {

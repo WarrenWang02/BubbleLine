@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GridSystem : MonoBehaviour
 {
-    public Grid grid;                         // Unity's Grid component
-    public Transform playerIndicator;         // Reference to the player's facing direction (child object)
-    public GameObject indicatorPrefab;        // Visual frame that shows the selected grid cell
+    [SerializeField] private Grid grid;                         // Unity's Grid component
+    [SerializeField] private Transform playerIndicator;         // Reference to the player's facing direction (child object)
+    [SerializeField] private GameObject indicatorPrefab;        // Visual frame that shows the selected grid cell
 
     private GameObject currentIndicator;      // Instance of the indicator prefab
 

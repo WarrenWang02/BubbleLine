@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class InteractionSystem : MonoBehaviour
 {
-    public Grid grid;                         // Unity's Grid component
-    public Transform machinesContainer;       // Parent holding all machine objects
+    [SerializeField] private Grid grid;                         // Unity's Grid component
+    [SerializeField] private Transform machinesContainer;       // Parent holding all machine objects
 
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
 
