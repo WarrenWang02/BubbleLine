@@ -55,7 +55,16 @@ public class PlayerController : MonoBehaviour
     }
     private void Interact(InputAction.CallbackContext context)
     {
-        // Trigger interaction through the InteractionSystem
-        interactionSystem.TryInteract(playerIndicator.position);
+        // Check which key was pressed and call the appropriate method
+        if (Keyboard.current.eKey.isPressed)
+        {
+            // Picking up a machine
+            interactionSystem.TryInteract(playerIndicator.position);
+        }
+        else if (Keyboard.current.cKey.isPressed)
+        {
+            // Dropping a machine
+            interactionSystem.TryDrop(playerIndicator.position);
+        }
     }
 }
