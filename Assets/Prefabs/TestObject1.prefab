@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 5360844832461617239}
   - component: {fileID: 4529140904383750593}
   - component: {fileID: 2245417360940767603}
-  - component: {fileID: 90292153938637080}
   m_Layer: 0
   m_Name: TestObject1
   m_TagString: machine
@@ -153,19 +152,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &90292153938637080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124116490533899670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7653b351cc2fbf34c89646e94e782e9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ghostMaterial: {fileID: 0}
 --- !u!1 &671142715603379778
 GameObject:
   m_ObjectHideFlags: 0

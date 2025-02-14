@@ -5,6 +5,7 @@ public class InteractionSystem : MonoBehaviour
 {
     [SerializeField] private Grid grid;                         // Unity's Grid component
     [SerializeField] private Transform machinesContainer;       // Parent holding all machine objects
+    [SerializeField] private Material testGhostMat;             // Ghost Mat
 
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
     private GameObject heldMachinePrefab = null;                // Store the picked-up machine prefab
@@ -41,7 +42,9 @@ public class InteractionSystem : MonoBehaviour
         if (!gridObjects.ContainsKey(spawnCellPosition))
         {
             Vector3 spawnPosition = grid.GetCellCenterWorld(spawnCellPosition);
-            spawnPosition.y = 0.25f; // Fixed Y height for all machines
+            // Ensure the spawned machine keeps its original Y position
+            float originalY = prefab.transform.position.y;
+            spawnPosition.y = originalY;
 
             GameObject newMachine = Instantiate(prefab, spawnPosition, Quaternion.identity, machinesContainer);
 
@@ -78,9 +81,24 @@ public class InteractionSystem : MonoBehaviour
             GameObject machineToPick = gridObjects[indicatorCellPosition];
             Debug.Log("Picked up: " + machineToPick.name);
 
+            // Store the picked-up machine reference
             heldMachinePrefab = machineToPick;
-            machineToPick.SetActive(false); // Temporarily hide the machine
-            gridObjects.Remove(indicatorCellPosition);
+            machineToPick.SetActive(false); // Hide the original machine
+            gridObjects.Remove(indicatorCellPosition); // Remove from grid tracking
+
+            // Get the original Y position of the prefab
+            float originalY = heldMachinePrefab.transform.position.y;
+
+            // Create a ghost version at the player's indicator position
+            Vector3 ghostSpawnPosition = grid.GetCellCenterWorld(grid.WorldToCell(indicatorWorldPosition));
+            ghostSpawnPosition.y = originalY; // Keep the original Y height
+
+            GameObject ghostMachine = Instantiate(heldMachinePrefab, ghostSpawnPosition, Quaternion.identity, machinesContainer);
+            ghostMachine.name = heldMachinePrefab.name + "_Ghost"; // Differentiate from original
+            ghostMachine.SetActive(true);
+
+            // Apply ghost material effect
+            ApplyGhostMaterial(ghostMachine, testGhostMat);
         }
         else
         {
