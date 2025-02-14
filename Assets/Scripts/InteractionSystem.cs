@@ -5,7 +5,6 @@ public class InteractionSystem : MonoBehaviour
 {
     [SerializeField] private Grid grid;                         // Unity's Grid component
     [SerializeField] private Transform machinesContainer;       // Parent holding all machine objects
-    [SerializeField] private MachineList machineList;           // Reference to the MachineList script
 
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
     private GameObject heldMachinePrefab = null;                // Store the picked-up machine prefab
