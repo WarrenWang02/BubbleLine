@@ -32,11 +32,18 @@ public class InteractionSystem : MonoBehaviour
 
         if (!gridObjects.ContainsKey(spawnCellPosition))
         {
-            // Instantiate the prefab at the correct grid position
-            GameObject newMachine = Instantiate(prefab, grid.GetCellCenterWorld(spawnCellPosition), Quaternion.identity, machinesContainer);
-            
+            // Get the correct grid center position
+            Vector3 spawnPosition = grid.GetCellCenterWorld(spawnCellPosition);
+
+            // Ensure the spawned machine always uses the prefab's correct height
+            float correctY = prefab.transform.position.y;
+            spawnPosition.y = correctY;  // Aligns with TryDrop behavior
+
+            // Instantiate at the correct grid position and height
+            GameObject newMachine = Instantiate(prefab, spawnPosition, Quaternion.identity, machinesContainer);
+
             // Ensure the machine is tagged correctly
-            if (newMachine.CompareTag("machine") == false)
+            if (!newMachine.CompareTag("machine"))
             {
                 Debug.LogError($"Spawned prefab '{newMachine.name}' is missing the 'machine' tag!");
                 Destroy(newMachine);
@@ -83,10 +90,17 @@ public class InteractionSystem : MonoBehaviour
 
             if (!gridObjects.ContainsKey(dropCellPosition))
             {
-                // Instantiate a new machine and activate it
-                GameObject newMachine = Instantiate(heldMachinePrefab, grid.GetCellCenterWorld(dropCellPosition), Quaternion.identity, machinesContainer);
+                // Get the correct grid center position
+                Vector3 dropPosition = grid.GetCellCenterWorld(dropCellPosition);
+
+                // Ensure the dropped machine uses its original Y height
+                float correctY = heldMachinePrefab.transform.position.y;
+                dropPosition.y = correctY;
+
+                // Instantiate at the correct position and height
+                GameObject newMachine = Instantiate(heldMachinePrefab, dropPosition, Quaternion.identity, machinesContainer);
                 newMachine.name = heldMachinePrefab.name;  // Remove (Clone) suffix
-                newMachine.SetActive(true);  // Ensure the new machine is active
+                newMachine.SetActive(true);
 
                 gridObjects.Add(dropCellPosition, newMachine);
                 Debug.Log("Dropped machine at: " + dropCellPosition);
@@ -105,4 +119,5 @@ public class InteractionSystem : MonoBehaviour
             Debug.Log("No machine to drop.");
         }
     }
+
 }
