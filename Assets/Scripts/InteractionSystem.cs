@@ -29,22 +29,22 @@ public class InteractionSystem : MonoBehaviour
     // Method to spawn a new machine prefab into the grid
     public void TrySpawn(GameObject prefab, Vector3 indicatorWorldPosition)
     {
+        if (heldMachinePrefab != null)
+        {
+            Debug.Log("Cannot spawn: Already holding a machine.");
+            return;
+        }
+
         Vector3Int spawnCellPosition = grid.WorldToCell(indicatorWorldPosition);
+        spawnCellPosition.y = 0; // Ensure stored grid position uses Y = 0 for consistency
 
         if (!gridObjects.ContainsKey(spawnCellPosition))
         {
-            // Get the correct grid center position
             Vector3 spawnPosition = grid.GetCellCenterWorld(spawnCellPosition);
-            spawnCellPosition.y = 0; // Ensure stored grid position uses Y = 0 for consistency
+            spawnPosition.y = 0.25f; // Fixed Y height for all machines
 
-            // Ensure the spawned machine always uses the prefab's correct height
-            float correctY = prefab.transform.position.y;
-            spawnPosition.y = correctY;  // Aligns with TryDrop behavior
-
-            // Instantiate at the correct grid position and height
             GameObject newMachine = Instantiate(prefab, spawnPosition, Quaternion.identity, machinesContainer);
 
-            // Ensure the machine is tagged correctly
             if (!newMachine.CompareTag("machine"))
             {
                 Debug.LogError($"Spawned prefab '{newMachine.name}' is missing the 'machine' tag!");
@@ -52,7 +52,6 @@ public class InteractionSystem : MonoBehaviour
                 return;
             }
 
-            // Add to grid tracking
             gridObjects.Add(spawnCellPosition, newMachine);
             Debug.Log($"Spawned machine: {newMachine.name} at {spawnCellPosition}");
         }
@@ -65,7 +64,12 @@ public class InteractionSystem : MonoBehaviour
     // This method is called when the player presses the interact button (E)
     public void TryInteract(Vector3 indicatorWorldPosition)
     {
-        // Convert world position to grid cell but ignore Y height for accurate detection
+        if (heldMachinePrefab != null)
+        {
+            Debug.Log("Cannot pick up: Already holding a machine.");
+            return;
+        }
+
         Vector3Int indicatorCellPosition = grid.WorldToCell(indicatorWorldPosition);
         indicatorCellPosition.y = 0; // Ignore Y-axis to detect machines at any height
 
@@ -74,10 +78,9 @@ public class InteractionSystem : MonoBehaviour
             GameObject machineToPick = gridObjects[indicatorCellPosition];
             Debug.Log("Picked up: " + machineToPick.name);
 
-            // Store the picked-up machine reference
             heldMachinePrefab = machineToPick;
             machineToPick.SetActive(false); // Temporarily hide the machine
-            gridObjects.Remove(indicatorCellPosition); // Remove from the grid tracking
+            gridObjects.Remove(indicatorCellPosition);
         }
         else
         {
