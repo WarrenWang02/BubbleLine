@@ -25,7 +25,7 @@ public class MachineProcessor : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Ensure the trigger was caused by an ingredient entering the ingredientZone
-        if (other.CompareTag("Ingredient") && other.bounds.Intersects(ingredientZone.bounds))
+        if (other.CompareTag("Ingredient"))
         {
             string ingredientName = GetNormalizedIngredientName(other.name);
             Destroy(other.gameObject);  // Destroy the ingredient when it enters the zone
@@ -51,11 +51,11 @@ public class MachineProcessor : MonoBehaviour
 
     private string GetNormalizedIngredientName(string rawName)
     {
-        if (Regex.IsMatch(rawName, @"\\bapple\\b", RegexOptions.IgnoreCase))
+        if (Regex.IsMatch(rawName, @"\bapple\b", RegexOptions.IgnoreCase))
         {
             return "apple";
         }
-        if (Regex.IsMatch(rawName, @"\\bbanana\\b", RegexOptions.IgnoreCase))
+        if (Regex.IsMatch(rawName, @"\bbanana\b", RegexOptions.IgnoreCase))
         {
             return "banana";
         }
