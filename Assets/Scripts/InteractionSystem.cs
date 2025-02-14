@@ -129,4 +129,31 @@ public class InteractionSystem : MonoBehaviour
         }
     }
 
+    private void ApplyGhostMaterial(GameObject targetObject, Material testGhostMat)
+    {
+        if (targetObject == null || testGhostMat == null) return;
+
+        Renderer targetRenderer = targetObject.GetComponent<Renderer>();
+        if (targetRenderer == null || targetRenderer.material == null) return;
+
+        // Get the original material
+        Material originalMaterial = targetRenderer.material;
+
+        // Create a new instance of the ghost material to avoid global changes
+        Material newGhostMaterial = new Material(testGhostMat);
+
+        // Copy the original material's Albedo color
+        Color originalColor = originalMaterial.color;
+
+        // Lighten the color (make it greyer/whiter)
+        Color lighterColor = Color.Lerp(originalColor, Color.white, 0.3f); // Adjust intensity as needed
+        newGhostMaterial.SetColor("_BaseColor", lighterColor); // Base color in Shader Graph
+
+        // Set the ghost color to be a slightly harder version of the original color
+        Color ghostColor = Color.Lerp(originalColor, Color.black, 0.3f); // Adjust intensity
+        newGhostMaterial.SetColor("_GhostColor", ghostColor); // Assuming "_GhostColor" exists in the shader
+
+        // Assign the new ghost material to the target object
+        targetRenderer.material = newGhostMaterial;
+    }
 }
