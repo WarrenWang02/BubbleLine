@@ -11,12 +11,13 @@ public class InteractionSystem : MonoBehaviour
 
     void Start()
     {
-        // Populate the gridObjects dictionary with machines at the start
         foreach (Transform machine in machinesContainer)
         {
             if (machine.CompareTag("machine"))
             {
                 Vector3Int cellPosition = grid.WorldToCell(machine.position);
+                cellPosition.y = 0; // Ensure Y is always 0 for proper detection
+
                 if (!gridObjects.ContainsKey(cellPosition))
                 {
                     gridObjects.Add(cellPosition, machine.gameObject);
@@ -34,6 +35,7 @@ public class InteractionSystem : MonoBehaviour
         {
             // Get the correct grid center position
             Vector3 spawnPosition = grid.GetCellCenterWorld(spawnCellPosition);
+            spawnCellPosition.y = 0; // Ensure stored grid position uses Y = 0 for consistency
 
             // Ensure the spawned machine always uses the prefab's correct height
             float correctY = prefab.transform.position.y;
@@ -63,17 +65,19 @@ public class InteractionSystem : MonoBehaviour
     // This method is called when the player presses the interact button (E)
     public void TryInteract(Vector3 indicatorWorldPosition)
     {
+        // Convert world position to grid cell but ignore Y height for accurate detection
         Vector3Int indicatorCellPosition = grid.WorldToCell(indicatorWorldPosition);
+        indicatorCellPosition.y = 0; // Ignore Y-axis to detect machines at any height
 
         if (gridObjects.ContainsKey(indicatorCellPosition))
         {
             GameObject machineToPick = gridObjects[indicatorCellPosition];
             Debug.Log("Picked up: " + machineToPick.name);
 
-            // Instead of destroying the machine, set it inactive to retain the reference
-            heldMachinePrefab = machineToPick;  // Store the reference to the picked machine
-            machineToPick.SetActive(false);     // Temporarily hide the machine
-            gridObjects.Remove(indicatorCellPosition);  // Remove from the grid
+            // Store the picked-up machine reference
+            heldMachinePrefab = machineToPick;
+            machineToPick.SetActive(false); // Temporarily hide the machine
+            gridObjects.Remove(indicatorCellPosition); // Remove from the grid tracking
         }
         else
         {
@@ -87,13 +91,15 @@ public class InteractionSystem : MonoBehaviour
         if (heldMachinePrefab != null)
         {
             Vector3Int dropCellPosition = grid.WorldToCell(indicatorWorldPosition);
+            dropCellPosition.y = 0; // Ensure stored grid position uses Y = 0 for consistency
+
 
             if (!gridObjects.ContainsKey(dropCellPosition))
             {
-                // Get the correct grid center position
+                // Get the correct grid center position (actually redundant could be DELETE)
                 Vector3 dropPosition = grid.GetCellCenterWorld(dropCellPosition);
 
-                // Ensure the dropped machine uses its original Y height
+                // Ensure the dropped machine uses its original Y height (actually redundant could be DELETE)
                 float correctY = heldMachinePrefab.transform.position.y;
                 dropPosition.y = correctY;
 
