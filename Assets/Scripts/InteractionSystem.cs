@@ -25,6 +25,34 @@ public class InteractionSystem : MonoBehaviour
         }
     }
 
+    // Method to spawn a new machine prefab into the grid
+    public void TrySpawn(GameObject prefab, Vector3 indicatorWorldPosition)
+    {
+        Vector3Int spawnCellPosition = grid.WorldToCell(indicatorWorldPosition);
+
+        if (!gridObjects.ContainsKey(spawnCellPosition))
+        {
+            // Instantiate the prefab at the correct grid position
+            GameObject newMachine = Instantiate(prefab, grid.GetCellCenterWorld(spawnCellPosition), Quaternion.identity, machinesContainer);
+            
+            // Ensure the machine is tagged correctly
+            if (newMachine.CompareTag("machine") == false)
+            {
+                Debug.LogError($"Spawned prefab '{newMachine.name}' is missing the 'machine' tag!");
+                Destroy(newMachine);
+                return;
+            }
+
+            // Add to grid tracking
+            gridObjects.Add(spawnCellPosition, newMachine);
+            Debug.Log($"Spawned machine: {newMachine.name} at {spawnCellPosition}");
+        }
+        else
+        {
+            Debug.Log("Spawn failed: Cell is already occupied.");
+        }
+    }
+
     // This method is called when the player presses the interact button (E)
     public void TryInteract(Vector3 indicatorWorldPosition)
     {

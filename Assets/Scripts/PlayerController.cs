@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform playerIndicator;    // Reference to the indicator object
     [SerializeField] private float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
     [SerializeField] private InteractionSystem interactionSystem;  // Reference to the InteractionSystem
+    [SerializeField] private GameObject conveyorBeltPrefab;  // Conveyor belt prefab to spawn
 
     void Awake()
     {
@@ -53,6 +54,8 @@ public class PlayerController : MonoBehaviour
     {
         moveInput = context.ReadValue<Vector2>();  // Read input from the action
     }
+
+    // Handles all interactions (Pick up, Drop, Spawn)
     private void Interact(InputAction.CallbackContext context)
     {
         // Check which key was pressed and call the appropriate method
@@ -65,6 +68,19 @@ public class PlayerController : MonoBehaviour
         {
             // Dropping a machine
             interactionSystem.TryDrop(playerIndicator.position);
+        }
+        else if (Keyboard.current.rKey.isPressed)
+        {
+            // Spawning a conveyor belt
+            if (conveyorBeltPrefab != null)
+            {
+                interactionSystem.TrySpawn(conveyorBeltPrefab, playerIndicator.position);
+                Debug.Log("Spawned Conveyor Belt at " + playerIndicator.position);
+            }
+            else
+            {
+                Debug.LogError("Conveyor Belt Prefab is not assigned in the Inspector!");
+            }
         }
     }
 }
