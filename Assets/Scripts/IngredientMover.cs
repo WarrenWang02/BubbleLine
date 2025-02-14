@@ -22,7 +22,7 @@ public class IngredientMover : MonoBehaviour
                 stuckTimer += Time.deltaTime;
                 if (stuckTimer > STUCK_TIME_LIMIT)
                 {
-                    Debug.LogWarning($"{gameObject.name} might be stuck! Retrying movement...");
+                    Debug.LogWarning($"{gameObject.name} might be stuck!");
                     stuckTimer = 0;
                     //transform.position += Vector3.up * 0.1f;  // Nudge upwards to try unsticking
                 }
