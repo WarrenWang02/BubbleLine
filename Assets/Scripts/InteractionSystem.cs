@@ -7,6 +7,7 @@ public class InteractionSystem : MonoBehaviour
     [SerializeField] private Grid grid;                         // Unity's Grid component
     [SerializeField] private Transform machinesContainer;       // Parent holding all machine objects
     [SerializeField] private Material testGhostMat;             // Ghost Mat
+    [SerializeField] private DeletableMachinesList deletableMachinesList;
 
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
     private GameObject heldMachinePrefab = null;                // Store the picked-up machine prefab
@@ -184,6 +185,32 @@ public class InteractionSystem : MonoBehaviour
             heldMachinePrefab.transform.rotation *= Quaternion.Euler(0, 90f, 0);
             gridsystem.rotateGhostPrefab90();
             Debug.Log("Rotated held machine by 90 degrees.");
+        }
+    }
+
+    public void TryDelete(Vector3 indicatorPosition)
+    {
+        Vector3Int cellPosition = grid.WorldToCell(indicatorPosition);
+        cellPosition.y = 0;
+
+        if (gridObjects.ContainsKey(cellPosition))
+        {
+            GameObject machineToDelete = gridObjects[cellPosition];
+
+            if (deletableMachinesList.IsDeletable(machineToDelete.name))
+            {
+                Destroy(machineToDelete);
+                gridObjects.Remove(cellPosition);
+                Debug.Log($"Deleted {machineToDelete.name} at {cellPosition}");
+            }
+            else
+            {
+                Debug.Log($"Cannot delete {machineToDelete.name}, not in deletable list.");
+            }
+        }
+        else
+        {
+            Debug.Log("No machine to delete at this position.");
         }
     }
 }

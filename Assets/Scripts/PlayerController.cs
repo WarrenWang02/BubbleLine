@@ -88,6 +88,9 @@ public class PlayerController : MonoBehaviour
         else if (Keyboard.current.rKey.isPressed){
             interactionSystem.RotateHeldMachine90();
         }
+        else if (Keyboard.current.cKey.isPressed){
+            interactionSystem.TryDelete(playerIndicator.position);
+        }
     }
 
     public void SpawnAgain(){
