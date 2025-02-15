@@ -69,7 +69,7 @@ public class GridSystem : MonoBehaviour
     {
         if (ghostPrefab != null)
         {
-            Destroy(ghostPrefab); // 🔥 Ensure the ghost prefab is removed from the scene
+            Destroy(ghostPrefab); // Ensure the ghost prefab is removed from the scene
             ghostPrefab = null;
         }
     }

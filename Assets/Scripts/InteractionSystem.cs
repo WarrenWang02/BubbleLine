@@ -31,7 +31,7 @@ public class InteractionSystem : MonoBehaviour
     }
 
     // Method to spawn a new machine prefab into the grid
-    public void TrySpawn(GameObject prefab, Vector3 indicatorWorldPosition)
+    public void TrySpawn(GameObject prefab)
     {
         if (heldMachinePrefab != null)
         {
@@ -39,43 +39,29 @@ public class InteractionSystem : MonoBehaviour
             return;
         }
 
-        Vector3Int spawnCellPosition = grid.WorldToCell(indicatorWorldPosition);
-        spawnCellPosition.y = 0; // Ensure stored grid position uses Y = 0 for consistency
+        // Prepare to drop the selected prefab instead of instantly spawning
+        heldMachinePrefab = prefab;
+        Debug.Log("Spawn prepared: " + prefab.name);
 
-        if (!gridObjects.ContainsKey(spawnCellPosition))
-        {
-            Vector3 spawnPosition = grid.GetCellCenterWorld(spawnCellPosition);
-            // Ensure the spawned machine keeps its original Y position
-            float originalY = prefab.transform.position.y;
-            spawnPosition.y = originalY;
-
-            GameObject newMachine = Instantiate(prefab, spawnPosition, Quaternion.identity, machinesContainer);
-
-            if (!newMachine.CompareTag("machine"))
-            {
-                Debug.LogError($"Spawned prefab '{newMachine.name}' is missing the 'machine' tag!");
-                Destroy(newMachine);
-                return;
-            }
-
-            gridObjects.Add(spawnCellPosition, newMachine);
-            Debug.Log($"Spawned machine: {newMachine.name} at {spawnCellPosition}");
-        }
-        else
-        {
-            Debug.Log("Spawn failed: Cell is already occupied.");
-        }
+        GameObject ghostMachine = Instantiate(heldMachinePrefab);
+        ghostMachine.SetActive(true);
+        ghostMachine.GetComponent<Collider>().enabled = false;
+        ghostMachine.GetComponent<Rigidbody>().detectCollisions = false;
+        ApplyGhostMaterial(ghostMachine, testGhostMat);
+        gridsystem.SetGhostPrefab(ghostMachine);
     }
 
     // This method is called when the player presses the interact button (E)
     public void TryInteract(Vector3 indicatorWorldPosition)
     {
+        // If already holding an object, attempt to drop it instead
         if (heldMachinePrefab != null)
         {
-            Debug.Log("Cannot pick up: Already holding a machine.");
+            TryDrop(indicatorWorldPosition);
             return;
         }
 
+        // Otherwise, try picking up a machine
         Vector3Int indicatorCellPosition = grid.WorldToCell(indicatorWorldPosition);
         indicatorCellPosition.y = 0; // Ignore Y-axis to detect machines at any height
 
@@ -93,9 +79,7 @@ public class InteractionSystem : MonoBehaviour
             ghostMachine.SetActive(true);
             ghostMachine.GetComponent<Collider>().enabled = false;
             ghostMachine.GetComponent<Rigidbody>().detectCollisions = false;
-            // Apply ghost material effect
             ApplyGhostMaterial(ghostMachine, testGhostMat);
-            //Call gridSystem's ghostPrefab
             gridsystem.SetGhostPrefab(ghostMachine);
         }
         else
@@ -112,19 +96,14 @@ public class InteractionSystem : MonoBehaviour
             Vector3Int dropCellPosition = grid.WorldToCell(indicatorWorldPosition);
             dropCellPosition.y = 0; // Ensure stored grid position uses Y = 0 for consistency
 
-
             if (!gridObjects.ContainsKey(dropCellPosition))
             {
-                // Get the correct grid center position (actually redundant could be DELETE)
                 Vector3 dropPosition = grid.GetCellCenterWorld(dropCellPosition);
-
-                // Ensure the dropped machine uses its original Y height (actually redundant could be DELETE)
                 float correctY = heldMachinePrefab.transform.position.y;
                 dropPosition.y = correctY;
 
-                // Instantiate at the correct position and height
                 GameObject newMachine = Instantiate(heldMachinePrefab, dropPosition, Quaternion.identity, machinesContainer);
-                newMachine.name = heldMachinePrefab.name;  // Remove (Clone) suffix
+                newMachine.name = heldMachinePrefab.name;
                 newMachine.SetActive(true);
 
                 gridObjects.Add(dropCellPosition, newMachine);
@@ -132,12 +111,13 @@ public class InteractionSystem : MonoBehaviour
 
                 // Destroy the previously held ma chine to avoid clutter
                 Destroy(heldMachinePrefab);
-                heldMachinePrefab = null;  // Clear the reference after dropping
+                // Reset held machine and remove ghost preview
+                heldMachinePrefab = null;
                 gridsystem.DeleteGhostPrefab();
             }
             else
             {
-                Debug.Log("There's already a machine at this position.");
+                Debug.Log("Drop failed: Cell already occupied.");
             }
         }
         else

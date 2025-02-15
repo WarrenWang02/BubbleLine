@@ -64,17 +64,12 @@ public class PlayerController : MonoBehaviour
             // Picking up a machine
             interactionSystem.TryInteract(playerIndicator.position);
         }
-        else if (Keyboard.current.cKey.isPressed)
-        {
-            // Dropping a machine
-            interactionSystem.TryDrop(playerIndicator.position);
-        }
-        else if (Keyboard.current.rKey.isPressed)
+        else if (Keyboard.current.digit1Key.isPressed)
         {
             // Spawning a conveyor belt
             if (conveyorBeltPrefab != null)
             {
-                interactionSystem.TrySpawn(conveyorBeltPrefab, playerIndicator.position);
+                interactionSystem.TrySpawn(conveyorBeltPrefab);
             }
             else
             {
