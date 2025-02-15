@@ -67,6 +67,10 @@ public class GridSystem : MonoBehaviour
     // Clear the ghostPrefab reference
     public void DeleteGhostPrefab()
     {
-        ghostPrefab = null;
+        if (ghostPrefab != null)
+        {
+            Destroy(ghostPrefab); // 🔥 Ensure the ghost prefab is removed from the scene
+            ghostPrefab = null;
+        }
     }
 }
