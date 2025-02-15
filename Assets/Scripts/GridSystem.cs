@@ -73,4 +73,11 @@ public class GridSystem : MonoBehaviour
             ghostPrefab = null;
         }
     }
+
+    public void rotateGhostPrefab90(){
+        if (ghostPrefab != null)
+        {
+            ghostPrefab.transform.rotation *= Quaternion.Euler(0, 90f, 0);
+        }
+    }
 }

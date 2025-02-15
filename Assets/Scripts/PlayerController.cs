@@ -76,5 +76,8 @@ public class PlayerController : MonoBehaviour
                 Debug.LogError("Conveyor Belt Prefab is not assigned in the Inspector!");
             }
         }
+        else if (Keyboard.current.rKey.isPressed){
+            interactionSystem.RotateHeldMachine90();
+        }
     }
 }

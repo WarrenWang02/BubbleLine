@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InteractionSystem : MonoBehaviour
@@ -102,7 +103,7 @@ public class InteractionSystem : MonoBehaviour
                 float correctY = heldMachinePrefab.transform.position.y;
                 dropPosition.y = correctY;
 
-                GameObject newMachine = Instantiate(heldMachinePrefab, dropPosition, Quaternion.identity, machinesContainer);
+                GameObject newMachine = Instantiate(heldMachinePrefab, dropPosition, heldMachinePrefab.transform.rotation, machinesContainer);
                 newMachine.name = heldMachinePrefab.name;
                 newMachine.SetActive(true);
 
@@ -164,5 +165,16 @@ public class InteractionSystem : MonoBehaviour
 
         // Assign the new ghost material to the target object
         targetRenderer.material = newGhostMaterial;
+    }
+
+    public void RotateHeldMachine90()
+    {
+        if (heldMachinePrefab != null)
+        {
+            // Apply rotation around Y-axis
+            heldMachinePrefab.transform.rotation *= Quaternion.Euler(0, 90f, 0);
+            gridsystem.rotateGhostPrefab90();
+            Debug.Log("Rotated held machine by 90 degrees.");
+        }
     }
 }
