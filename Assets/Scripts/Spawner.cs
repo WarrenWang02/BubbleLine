@@ -5,6 +5,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private GameObject prefabToSpawn; // Prefab assigned in Inspector or by script
     [SerializeField] private float spawnRadius = 0.3f; // Radius to check for obstacles
     [SerializeField] private float spawnInterval = 2f; // Time in seconds between spawns (adjustable)
+    [SerializeField] private Transform parentContainer;
     
     private float spawnTimer = 0f; // Timer to track spawn intervals
 
@@ -29,8 +30,8 @@ public class Spawner : MonoBehaviour
 
         if (prefabToSpawn != null)
         {
-            Instantiate(prefabToSpawn, transform.position, Quaternion.identity);
-            Debug.Log("Spawned: " + prefabToSpawn.name + " at " + transform.position);
+            Instantiate(prefabToSpawn, transform.position, Quaternion.identity, parentContainer);
+            //Debug.Log("Spawned: " + prefabToSpawn.name + " at " + transform.position);
         }
         else
         {
