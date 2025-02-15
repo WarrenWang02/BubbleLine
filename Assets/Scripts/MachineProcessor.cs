@@ -1,20 +1,20 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public class MachineProcessor : MonoBehaviour
 {
-    [SerializeField] private Transform outputPosition;  // Output spawn location
-    [SerializeField] private Collider ingredientZone;   // Collider zone to detect ingredients
+    [SerializeField] private Transform outputPosition;
+    [SerializeField] private Collider ingredientZone;
+    [SerializeField] private RecipeData recipeData; // New scriptable object reference
 
     private Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
-    private HashSet<string> allowedIngredients = new HashSet<string> { "apple", "banana" };
 
     private void Start()
     {
         if (ingredientZone != null)
         {
-            ingredientZone.isTrigger = true;  // Ensure the collider is set to trigger
+            ingredientZone.isTrigger = true;
         }
         else
         {
@@ -24,56 +24,53 @@ public class MachineProcessor : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Ensure the trigger was caused by an ingredient entering the ingredientZone
         if (other.CompareTag("Ingredient"))
         {
             string ingredientName = GetNormalizedIngredientName(other.name);
-            Destroy(other.gameObject);  // Destroy the ingredient when it enters the zone
+            Destroy(other.gameObject); // Remove ingredient
 
-            // Only record allowed ingredients
-            if (allowedIngredients.Contains(ingredientName))
+            if (!string.IsNullOrEmpty(ingredientName))
             {
                 if (!ingredientCounts.ContainsKey(ingredientName))
                 {
                     ingredientCounts[ingredientName] = 0;
                 }
                 ingredientCounts[ingredientName]++;
+
                 Debug.Log($"Added {ingredientName}. Current count: {ingredientCounts[ingredientName]}");
 
                 CheckRecipe();
-            }
-            else
-            {
-                Debug.Log($"Ignored {other.name}, not part of the recipe.");
             }
         }
     }
 
     private string GetNormalizedIngredientName(string rawName)
     {
-        if (Regex.IsMatch(rawName, @"\bapple\b", RegexOptions.IgnoreCase))
-        {
-            return "apple";
-        }
-        if (Regex.IsMatch(rawName, @"\bbanana\b", RegexOptions.IgnoreCase))
-        {
-            return "banana";
-        }
-        return "";
+        return Regex.Replace(rawName.ToLower(), @"\s*\(\d+\)", "").Trim();
     }
 
     private void CheckRecipe()
     {
-        if (ingredientCounts.ContainsKey("apple") && ingredientCounts["apple"] >= 2 &&
-            ingredientCounts.ContainsKey("banana") && ingredientCounts["banana"] >= 1)
+        if (recipeData == null)
         {
-            ProduceOutput();
-            ingredientCounts["apple"] -= 2;
-            ingredientCounts["banana"] -= 1;
+            Debug.LogError("No RecipeData assigned!");
+            return;
+        }
+
+        RecipeData.Recipe matchingRecipe = recipeData.GetMatchingRecipe(ingredientCounts);
+
+        if (matchingRecipe != null)
+        {
+            ProduceOutput(matchingRecipe.productName);
+
+            foreach (var requirement in matchingRecipe.ingredients)
+            {
+                ingredientCounts[requirement.ingredientName] -= requirement.requiredAmount;
+            }
         }
     }
 
-    private void ProduceOutput()
+    private void ProduceOutput(string productName)
     {
         if (Physics.CheckSphere(outputPosition.position, 0.5f))
         {
@@ -81,7 +78,7 @@ public class MachineProcessor : MonoBehaviour
             return;
         }
 
-        GameObject newProduct = Instantiate(Resources.Load<GameObject>("ProductPrefab"), outputPosition.position, Quaternion.identity);
-        Debug.Log("Produced a new product!");
+        GameObject newProduct = Instantiate(Resources.Load<GameObject>(productName), outputPosition.position, Quaternion.identity);
+        Debug.Log($"Produced: {productName}");
     }
 }

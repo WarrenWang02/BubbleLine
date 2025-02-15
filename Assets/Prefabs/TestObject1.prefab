@@ -125,6 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outputPosition: {fileID: 5467431350283416403}
   ingredientZone: {fileID: 7049265199044711107}
+  recipeData: {fileID: 11400000, guid: cb22de1f142067a43a9c7811e9bdc3ee, type: 2}
 --- !u!54 &2245417360940767603
 Rigidbody:
   m_ObjectHideFlags: 0
