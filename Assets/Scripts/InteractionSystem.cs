@@ -11,6 +11,7 @@ public class InteractionSystem : MonoBehaviour
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
     private GameObject heldMachinePrefab = null;                // Store the picked-up machine prefab
     private GridSystem gridsystem;
+    public PlayerController playerController;
 
     void Start()
     {
@@ -50,6 +51,12 @@ public class InteractionSystem : MonoBehaviour
         ghostMachine.GetComponent<Rigidbody>().detectCollisions = false;
         ApplyGhostMaterial(ghostMachine, testGhostMat);
         gridsystem.SetGhostPrefab(ghostMachine);
+    }
+
+    public void DeSpawn()
+    {
+        heldMachinePrefab = null;
+        gridsystem.DeleteGhostPrefab();
     }
 
     // This method is called when the player presses the interact button (E)
@@ -128,6 +135,8 @@ public class InteractionSystem : MonoBehaviour
         {
             Debug.Log("No machine to drop.");
         }
+
+        playerController.SpawnAgain();
     }
 
     private void ApplyGhostMaterial(GameObject targetObject, Material testGhostMat)

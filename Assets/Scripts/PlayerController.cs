@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
     [SerializeField] private InteractionSystem interactionSystem;  // Reference to the InteractionSystem
     [SerializeField] private GameObject conveyorBeltPrefab;  // Conveyor belt prefab to spawn
+    private GameObject selectedSpawnPrefab; //memory a prefab that lastly selected to spawn
+    private bool spawnToggleMode = false; //record Spawn is Toggle ON/OFF
+
 
     void Awake()
     {
@@ -69,7 +72,13 @@ public class PlayerController : MonoBehaviour
             // Spawning a conveyor belt
             if (conveyorBeltPrefab != null)
             {
-                interactionSystem.TrySpawn(conveyorBeltPrefab);
+                if (!spawnToggleMode){
+                    selectedSpawnPrefab = conveyorBeltPrefab;
+                    interactionSystem.TrySpawn(selectedSpawnPrefab);
+                } else {
+                    interactionSystem.DeSpawn();
+                }
+                spawnToggleMode = !spawnToggleMode;
             }
             else
             {
@@ -78,6 +87,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (Keyboard.current.rKey.isPressed){
             interactionSystem.RotateHeldMachine90();
+        }
+    }
+
+    public void SpawnAgain(){
+        if (spawnToggleMode){
+            interactionSystem.TrySpawn(selectedSpawnPrefab);
         }
     }
 }
