@@ -109,8 +109,11 @@ public class InteractionSystem : MonoBehaviour
                 gridObjects.Add(dropCellPosition, newMachine);
                 Debug.Log("Dropped machine at: " + dropCellPosition);
 
-                // Destroy the previously held ma chine to avoid clutter
-                Destroy(heldMachinePrefab);
+                //destroying original prefab in the field
+                if (heldMachinePrefab.scene.IsValid()) 
+                {
+                    Destroy(heldMachinePrefab); // Only destroy if it exists in the scene
+                }
                 // Reset held machine and remove ghost preview
                 heldMachinePrefab = null;
                 gridsystem.DeleteGhostPrefab();
