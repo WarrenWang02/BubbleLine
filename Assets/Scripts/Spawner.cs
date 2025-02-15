@@ -42,7 +42,16 @@ public class Spawner : MonoBehaviour
     private bool IsSpawnLocationBlocked()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, spawnRadius);
-        return hitColliders.Length > 0; // If any colliders are found, spawning is blocked
+
+        foreach (Collider collider in hitColliders)
+        {
+            if (collider.CompareTag(prefabToSpawn.tag)) // Only block if it's the same type
+            {
+                return true;
+            }
+        }
+
+        return false; // No matching objects, spawn is allowed
     }
 
     // Optional: Allow setting prefab by script

@@ -43,7 +43,7 @@ public class IngredientMover : MonoBehaviour
 
         targetSpot = newTarget;
         moveSpeed = speed;
-        Debug.Log($"{gameObject.name} is now moving to {newTarget.name} at speed {speed}");
+        //Debug.Log($"{gameObject.name} is now moving to {newTarget.name} at speed {speed}");
     }
 
     private bool HasReachedTarget()
