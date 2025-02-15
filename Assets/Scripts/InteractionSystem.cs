@@ -152,24 +152,33 @@ public class InteractionSystem : MonoBehaviour
         if (targetObject == null || testGhostMat == null) return;
 
         Renderer targetRenderer = targetObject.GetComponent<Renderer>();
-        if (targetRenderer == null || targetRenderer.material == null) return;
+        if (targetRenderer == null || targetRenderer.sharedMaterial == null) return;
 
-        // Get the original material
-        Material originalMaterial = targetRenderer.material;
+        // Get the original material from the object
+        Material originalMaterial = targetRenderer.sharedMaterial;
 
-        // Create a new instance of the ghost material to avoid global changes
+        // Create a new instance of the ghost material to prevent affecting other objects
         Material newGhostMaterial = new Material(testGhostMat);
 
-        // Copy the original material's Albedo color
-        Color originalColor = originalMaterial.color;
+        // Check if the original material has an Albedo color and transfer it directly
+        if (originalMaterial.HasProperty("_Color")) // Standard Shader uses _BaseColor
+        {
+            Color originalColor = originalMaterial.GetColor("_Color");
 
-        // Lighten the color (make it greyer/whiter)
-        Color lighterColor = Color.Lerp(originalColor, Color.white, 0.3f); // Adjust intensity as needed
-        newGhostMaterial.SetColor("_BaseColor", lighterColor); // Base color in Shader Graph
-
-        // Set the ghost color to be a slightly harder version of the original color
-        Color ghostColor = Color.Lerp(originalColor, Color.black, 0.3f); // Adjust intensity
-        newGhostMaterial.SetColor("_GhostColor", ghostColor); // Assuming "_GhostColor" exists in the shader
+            // Directly transfer the color to both BaseColor and GhostColor
+            if (newGhostMaterial.HasProperty("_Base_Color")) // Ensure GhostColor exists in shader
+            {
+                newGhostMaterial.SetColor("_Base_Color", originalColor);
+            } else {
+                Debug.Log("not found ghostmat's base color");
+            }
+            if (newGhostMaterial.HasProperty("_Ghost_Color")) // Ensure GhostColor exists in shader
+            {
+                newGhostMaterial.SetColor("_Ghost_Color", originalColor);
+            } else {
+                Debug.Log("not found ghostmat's ghost color");
+            }
+        }
 
         // Assign the new ghost material to the target object
         targetRenderer.material = newGhostMaterial;

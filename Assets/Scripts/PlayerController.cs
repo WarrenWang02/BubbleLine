@@ -75,7 +75,6 @@ public class PlayerController : MonoBehaviour
             if (conveyorBeltPrefab != null)
             {
                 interactionSystem.TrySpawn(conveyorBeltPrefab, playerIndicator.position);
-                Debug.Log("Spawned Conveyor Belt at " + playerIndicator.position);
             }
             else
             {
