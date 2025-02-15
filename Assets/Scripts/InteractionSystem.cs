@@ -9,9 +9,12 @@ public class InteractionSystem : MonoBehaviour
 
     private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
     private GameObject heldMachinePrefab = null;                // Store the picked-up machine prefab
+    private GridSystem gridsystem;
 
     void Start()
     {
+        gridsystem = GetComponent<GridSystem>();
+        
         foreach (Transform machine in machinesContainer)
         {
             if (machine.CompareTag("machine"))
@@ -86,19 +89,14 @@ public class InteractionSystem : MonoBehaviour
             machineToPick.SetActive(false); // Hide the original machine
             gridObjects.Remove(indicatorCellPosition); // Remove from grid tracking
 
-            // Get the original Y position of the prefab
-            float originalY = heldMachinePrefab.transform.position.y;
-
-            // Create a ghost version at the player's indicator position
-            Vector3 ghostSpawnPosition = grid.GetCellCenterWorld(grid.WorldToCell(indicatorWorldPosition));
-            ghostSpawnPosition.y = originalY; // Keep the original Y height
-
-            GameObject ghostMachine = Instantiate(heldMachinePrefab, ghostSpawnPosition, Quaternion.identity, machinesContainer);
-            ghostMachine.name = heldMachinePrefab.name + "_Ghost"; // Differentiate from original
+            GameObject ghostMachine = Instantiate(heldMachinePrefab);
             ghostMachine.SetActive(true);
-
+            ghostMachine.GetComponent<Collider>().enabled = false;
+            ghostMachine.GetComponent<Rigidbody>().detectCollisions = false;
             // Apply ghost material effect
             ApplyGhostMaterial(ghostMachine, testGhostMat);
+            //Call gridSystem's ghostPrefab
+            gridsystem.SetGhostPrefab(ghostMachine);
         }
         else
         {
@@ -132,9 +130,10 @@ public class InteractionSystem : MonoBehaviour
                 gridObjects.Add(dropCellPosition, newMachine);
                 Debug.Log("Dropped machine at: " + dropCellPosition);
 
-                // Destroy the previously held machine to avoid clutter
+                // Destroy the previously held ma chine to avoid clutter
                 Destroy(heldMachinePrefab);
                 heldMachinePrefab = null;  // Clear the reference after dropping
+                gridsystem.DeleteGhostPrefab();
             }
             else
             {

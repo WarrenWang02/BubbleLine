@@ -1,14 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GridSystem : MonoBehaviour
 {
     [SerializeField] private Grid grid;                         // Unity's Grid component
-    [SerializeField] private Transform playerIndicator;         // Reference to the player's facing direction (child object)
-    [SerializeField] private GameObject indicatorPrefab;        // Visual frame that shows the selected grid cell
+    [SerializeField] private Transform playerIndicator;         // Reference to the player's facing direction
+    [SerializeField] private GameObject indicatorPrefab;        // Visual frame for selected grid cell
 
-    private GameObject currentIndicator;      // Instance of the indicator prefab
+    private GameObject currentIndicator; // Instance of the indicator prefab
+    [SerializeField] private GameObject ghostPrefab;      // Reference to the ghost object (no instantiation)
 
     void Start()
     {
@@ -20,6 +20,12 @@ public class GridSystem : MonoBehaviour
     {
         // Update the indicator's position to follow the player's facing direction
         UpdateIndicatorPosition();
+
+        // Update ghost object position only if it exists
+        if (ghostPrefab != null)
+        {
+            UpdateGhostPosition();
+        }
     }
 
     void UpdateIndicatorPosition()
@@ -35,5 +41,32 @@ public class GridSystem : MonoBehaviour
 
         // Move the visual indicator to the adjusted grid position
         currentIndicator.transform.position = snappedPosition;
+    }
+
+    void UpdateGhostPosition()
+    {
+        if (ghostPrefab == null) return;
+
+        // Get the indicator's current grid position
+        Vector3Int cellPosition = grid.WorldToCell(playerIndicator.position);
+        Vector3 ghostPosition = grid.GetCellCenterWorld(cellPosition);
+
+        // Maintain the ghost object's original height
+        ghostPosition.y = ghostPrefab.transform.position.y;
+
+        // Instantly move the ghost object (no smoothing)
+        ghostPrefab.transform.position = ghostPosition;
+    }
+
+    // Assign a GameObject to ghostPrefab
+    public void SetGhostPrefab(GameObject prefab)
+    {
+        ghostPrefab = prefab;
+    }
+
+    // Clear the ghostPrefab reference
+    public void DeleteGhostPrefab()
+    {
+        ghostPrefab = null;
     }
 }
