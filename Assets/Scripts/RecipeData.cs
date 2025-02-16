@@ -7,8 +7,9 @@ public class RecipeData : ScriptableObject
     [System.Serializable]
     public class Recipe
     {
-        public string productName; // Name of the final product
+        public string recipeName; // Name for reference in the Inspector
         public List<IngredientRequirement> ingredients; // Required ingredients
+        public GameObject outputPrefab; // Assignable prefab for output in the Inspector
     }
 
     [System.Serializable]
@@ -24,22 +25,22 @@ public class RecipeData : ScriptableObject
     {
         foreach (var recipe in recipes)
         {
-            bool matches = true;
-
-            foreach (var requirement in recipe.ingredients)
-            {
-                if (!currentIngredients.ContainsKey(requirement.ingredientName) ||
-                    currentIngredients[requirement.ingredientName] < requirement.requiredAmount)
-                {
-                    matches = false;
-                    break;
-                }
-            }
-
-            if (matches)
-                return recipe;
+            if (HasEnoughIngredients(recipe, currentIngredients))
+                return recipe; // Now we return the full recipe, including the prefab
         }
+        return null;
+    }
 
-        return null; // No matching recipe found
+    private bool HasEnoughIngredients(Recipe recipe, Dictionary<string, int> currentIngredients)
+    {
+        foreach (var requirement in recipe.ingredients)
+        {
+            if (!currentIngredients.ContainsKey(requirement.ingredientName) ||
+                currentIngredients[requirement.ingredientName] < requirement.requiredAmount)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

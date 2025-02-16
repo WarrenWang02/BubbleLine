@@ -37,7 +37,7 @@ public class MachineProcessor : MonoBehaviour
                 }
                 ingredientCounts[ingredientName]++;
 
-                Debug.Log($"Added {ingredientName}. Current count: {ingredientCounts[ingredientName]}");
+                Debug.Log($"Added [{ingredientName}] Current count: {ingredientCounts[ingredientName]}");
 
                 CheckRecipe();
             }
@@ -46,7 +46,17 @@ public class MachineProcessor : MonoBehaviour
 
     private string GetNormalizedIngredientName(string rawName)
     {
-        return Regex.Replace(rawName.ToLower(), @"\s*\(\d+\)", "").Trim();
+        // Convert to lowercase for consistency
+        string normalized = rawName.ToLower();
+
+        // Remove "(Clone)" if present
+        normalized = Regex.Replace(normalized, @"\s*\(clone\)", "");
+
+        // Remove any extra numbers in parentheses (like "(1)", "(2)")
+        normalized = Regex.Replace(normalized, @"\s*\(\d+\)", "");
+
+        // Trim extra spaces
+        return normalized.Trim();
     }
 
     private void CheckRecipe()
@@ -59,26 +69,61 @@ public class MachineProcessor : MonoBehaviour
 
         RecipeData.Recipe matchingRecipe = recipeData.GetMatchingRecipe(ingredientCounts);
 
-        if (matchingRecipe != null)
+        if (matchingRecipe != null && HasEnoughIngredients(matchingRecipe))
         {
-            ProduceOutput(matchingRecipe.productName);
+            ProduceOutput(matchingRecipe);
 
+            // Deduct ingredients only if enough are present
             foreach (var requirement in matchingRecipe.ingredients)
             {
                 ingredientCounts[requirement.ingredientName] -= requirement.requiredAmount;
             }
         }
     }
-
-    private void ProduceOutput(string productName)
+    private void ProduceOutput(RecipeData.Recipe recipe)
     {
+        if (recipe.outputPrefab == null)
+        {
+            Debug.LogError($"No output prefab assigned for recipe: {recipe.recipeName}");
+            return;
+        }
+
+        // Commented out block detection check
+        /*
         if (Physics.CheckSphere(outputPosition.position, 0.5f))
         {
             Debug.Log("Output area is blocked, cannot produce a new item.");
             return;
         }
+        */
 
-        GameObject newProduct = Instantiate(Resources.Load<GameObject>(productName), outputPosition.position, Quaternion.identity);
-        Debug.Log($"Produced: {productName}");
+        // Instantiate product at the output position
+        GameObject newProduct = Instantiate(recipe.outputPrefab, outputPosition.position, Quaternion.identity);
+        newProduct.name = recipe.recipeName; // Rename to match recipe
+
+        // Find the "IngredientsContainer" GameObject in the scene
+        GameObject container = GameObject.Find("IngredientsContainer");
+        if (container != null)
+        {
+            newProduct.transform.SetParent(container.transform); // Attach to container
+        }
+        else
+        {
+            Debug.LogWarning("IngredientsContainer not found! Product spawned without a parent.");
+        }
+
+        Debug.Log($"Produced: {recipe.recipeName}");
+    }
+
+    private bool HasEnoughIngredients(RecipeData.Recipe recipe)
+    {
+        foreach (var requirement in recipe.ingredients)
+        {
+            if (!ingredientCounts.ContainsKey(requirement.ingredientName) || ingredientCounts[requirement.ingredientName] < requirement.requiredAmount)
+            {
+                return false;  // Not enough ingredients, so don't produce output
+            }
+        }
+        return true; // All ingredients meet the required amount
     }
 }

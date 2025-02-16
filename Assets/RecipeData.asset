@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 752c66426dfed5d4bb1edcce2c7662db, type: 3}
   m_Name: RecipeData
   m_EditorClassIdentifier: 
-  recipes: []
+  recipes:
+  - recipeName: MilkTea
+    ingredients:
+    - ingredientName: Milk
+      requiredAmount: 2
+    - ingredientName: Tea
+      requiredAmount: 1
+    outputPrefab: {fileID: 0}
