@@ -1,14 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine.UI;
+using System.Collections;
 
 public class MachineProcessor : MonoBehaviour
 {
     [SerializeField] private Transform outputPosition;
     [SerializeField] private Collider ingredientZone;
     [SerializeField] private RecipeData recipeData; // New scriptable object reference
+    [SerializeField] private Image progressBar; // should be foreground image in the child
+    [SerializeField] private float productionTime = 3f; // Editable countdown time in Inspector
 
     private Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
+    private Coroutine productionCoroutine; // To handle the countdown process
 
     private void Start()
     {
@@ -19,6 +24,11 @@ public class MachineProcessor : MonoBehaviour
         else
         {
             Debug.LogError("Ingredient Zone is not assigned in the Inspector.");
+        }
+
+        if (progressBar != null)
+        {
+            progressBar.fillAmount = 0f;
         }
     }
 
@@ -71,12 +81,10 @@ public class MachineProcessor : MonoBehaviour
 
         if (matchingRecipe != null && HasEnoughIngredients(matchingRecipe))
         {
-            ProduceOutput(matchingRecipe);
-
-            // Deduct ingredients only if enough are present
-            foreach (var requirement in matchingRecipe.ingredients)
+            // Start countdown instead of immediately producing output
+            if (productionCoroutine == null)
             {
-                ingredientCounts[requirement.ingredientName] -= requirement.requiredAmount;
+                productionCoroutine = StartCoroutine(ProductionCountdown(matchingRecipe));
             }
         }
     }
@@ -125,5 +133,45 @@ public class MachineProcessor : MonoBehaviour
             }
         }
         return true; // All ingredients meet the required amount
+    }
+
+    private IEnumerator ProductionCountdown(RecipeData.Recipe matchingRecipe)
+    {
+        float elapsedTime = 0f;
+
+        // Gradually fill UI bar over productionTime duration
+        while (elapsedTime < productionTime)
+        {
+            elapsedTime += Time.deltaTime;
+            if (progressBar != null)
+            {
+                progressBar.fillAmount = elapsedTime / productionTime;
+            }
+            yield return null;
+        }
+
+        // Ensure bar is full when complete
+        if (progressBar != null)
+        {
+            progressBar.fillAmount = 1f;
+        }
+
+        // Produce output after countdown completes
+        ProduceOutput(matchingRecipe);
+
+        // Deduct ingredients
+        foreach (var requirement in matchingRecipe.ingredients)
+        {
+            ingredientCounts[requirement.ingredientName] -= requirement.requiredAmount;
+        }
+
+        // Reset progress bar
+        if (progressBar != null)
+        {
+            progressBar.fillAmount = 0f;
+        }
+
+        // Reset coroutine reference
+        productionCoroutine = null;
     }
 }

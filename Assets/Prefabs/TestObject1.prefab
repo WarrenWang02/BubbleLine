@@ -127,6 +127,8 @@ MonoBehaviour:
   outputPosition: {fileID: 5467431350283416403}
   ingredientZone: {fileID: 7049265199044711107}
   recipeData: {fileID: 11400000, guid: d2877be7b1729ff46aab0a96e1fca1a9, type: 2}
+  progressBar: {fileID: 6000255798899564809}
+  productionTime: 3
 --- !u!54 &2245417360940767603
 Rigidbody:
   m_ObjectHideFlags: 0
