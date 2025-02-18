@@ -57,16 +57,16 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput(InputAction.CallbackContext context)
     {
-        Debug.Log($"Action Triggered: {context.action.name}");
+        //Debug.Log($"Action Triggered: {context.action.name}");
 
         switch (context.action.name)
         {
             case "Move":
                 moveInput = context.ReadValue<Vector2>();
-                Debug.Log($"Move Input: {moveInput}");
+                //Debug.Log($"Move Input: {moveInput}");
                 break;
             case "Interact":
-                Debug.Log("Interact Pressed");
+                //Debug.Log("Interact Pressed");
                 HandleInteract();
                 break;
         }
@@ -74,7 +74,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInteract()
     {
-        if (playerInput.currentControlScheme == "Keyboard & Mouse")
+        //Debug.Log("Interact Pressed");
+        if (playerInput.currentControlScheme == "Keyboard")
         {
             if (Keyboard.current.eKey.wasPressedThisFrame)
             {
@@ -93,7 +94,7 @@ public class PlayerController : MonoBehaviour
                 interactionSystem.TryDelete(playerIndicator.position);
             }
         }
-        else if (playerInput.currentControlScheme == "Gamepad")
+        else if (playerInput.currentControlScheme == "XboxController")
         {
             Gamepad gamepad = (Gamepad)playerInput.devices[0];
 
