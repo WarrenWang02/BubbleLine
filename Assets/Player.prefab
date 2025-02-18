@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8392088878900423218}
   - component: {fileID: 8815149107311553103}
   m_Layer: 0
-  m_Name: PlayerIndicatorTest
+  m_Name: PlayerIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,6 +98,8 @@ GameObject:
   - component: {fileID: 8408456739399004333}
   - component: {fileID: 2429108495259986005}
   - component: {fileID: 481575175899113202}
+  - component: {fileID: 7612138050457067076}
+  - component: {fileID: -4983584592230035247}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -274,3 +276,34 @@ MonoBehaviour:
   rotationSpeed: 10
   interactionSystem: {fileID: 0}
   conveyorBeltPrefab: {fileID: 7824910322284308315, guid: 6873a8acdea75ff4091b801196720418, type: 3}
+--- !u!114 &7612138050457067076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7589678349155560132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a961e3fc531b3cc44a13bee17ac2831c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridObjectsAsset: {fileID: 11400000, guid: 2e42a8ff9cc215349a086d4f36873fdb, type: 2}
+  testGhostMat: {fileID: 2100000, guid: 3bd463840221b6d4198d4e78db38dc5e, type: 2}
+  deletableMachinesList: {fileID: 11400000, guid: 6ce0ff21b5ecc4847bc6536dbe3940f0, type: 2}
+--- !u!114 &-4983584592230035247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7589678349155560132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b0e54fe30bc6db43b02a00d6babeb2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid: {fileID: 0}
+  playerIndicator: {fileID: 0}
+  indicatorPrefab: {fileID: 6361544123652104997, guid: 8f711ffdb17cd634c8c5dd57b37e8292, type: 3}
+  ghostPrefab: {fileID: 0}

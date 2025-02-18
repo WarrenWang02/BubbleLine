@@ -10,9 +10,33 @@ public class GridSystem : MonoBehaviour
     private GameObject currentIndicator; // Instance of the indicator prefab
     [SerializeField] private GameObject ghostPrefab;      // Reference to the ghost object (no instantiation)
 
-    void Start()
+    void Awake()
     {
-        // Instantiate the visual indicator at the start
+        //Find Grid in the scene
+        GameObject gridObj = GameObject.Find("Grid");
+        if (gridObj != null)
+        {
+            grid = gridObj.GetComponent<Grid>();
+            Debug.Log("[DEBUG] Grid assigned to GridSystem.");
+        }
+        else
+        {
+            Debug.LogError("[ERROR] Grid not found in the scene!");
+        }
+
+        //Find Player Indicator (Child Object)
+        Transform indicator = transform.Find("PlayerIndicator");
+        if (indicator != null)
+        {
+            playerIndicator = indicator;
+            Debug.Log("[DEBUG] Player Indicator assigned.");
+        }
+        else
+        {
+            Debug.LogError("[ERROR] Player Indicator not found inside Player prefab!");
+        }
+        
+        // Instantiate the visual indicator at the Awake
         currentIndicator = Instantiate(indicatorPrefab);
     }
 

@@ -4,32 +4,54 @@ using UnityEngine;
 
 public class InteractionSystem : MonoBehaviour
 {
-    [SerializeField] private Grid grid;                         // Unity's Grid component
-    [SerializeField] private Transform machinesContainer;       // Parent holding all machine objects
-    [SerializeField] private Material testGhostMat;             // Ghost Mat
-    [SerializeField] private DeletableMachinesList deletableMachinesList;
+    [SerializeField] private GridObjectsAsset gridObjectsAsset; // Shared GridObjects dictionary
+    [SerializeField] private Material testGhostMat;             // Manually assign in inspector
+    [SerializeField] private DeletableMachinesList deletableMachinesList; // Manually assign in inspector
 
-    private Dictionary<Vector3Int, GameObject> gridObjects = new Dictionary<Vector3Int, GameObject>();
-    private GameObject heldMachinePrefab = null;                // Store the picked-up machine prefab
-    private GridSystem gridsystem;
-    public PlayerController playerController;
+    private GameObject heldMachinePrefab = null; // Store the picked-up machine prefab
+    private Dictionary<Vector3Int, GameObject> gridObjects; // Reference to asset dictionary
+    private Grid grid;
+    private Transform machinesContainer;
+    private GridSystem gridSystem;
+    private PlayerController playerController;
 
-    void Start()
+    void Awake()
     {
-        gridsystem = GetComponent<GridSystem>();
-        
-        foreach (Transform machine in machinesContainer)
+        // Dynamically find Grid
+        GameObject gridObj = GameObject.Find("Grid");
+        if (gridObj != null)
         {
-            if (machine.CompareTag("machine"))
-            {
-                Vector3Int cellPosition = grid.WorldToCell(machine.position);
-                cellPosition.y = 0; // Ensure Y is always 0 for proper detection
+            grid = gridObj.GetComponent<Grid>();
+            Debug.Log("[DEBUG] Grid assigned.");
+        }
+        else
+        {
+            Debug.LogError("[ERROR] Grid not found in the scene!");
+        }
 
-                if (!gridObjects.ContainsKey(cellPosition))
-                {
-                    gridObjects.Add(cellPosition, machine.gameObject);
-                }
-            }
+        // Dynamically find MachinesContainer
+        GameObject containerObj = GameObject.Find("MachinesContainer");
+        if (containerObj != null)
+        {
+            machinesContainer = containerObj.transform;
+            Debug.Log("[DEBUG] MachinesContainer assigned.");
+        }
+        else
+        {
+            Debug.LogError("[ERROR] MachinesContainer not found!");
+        }
+
+        // Get references on the same object
+        gridSystem = GetComponent<GridSystem>();
+        playerController = GetComponent<PlayerController>();
+
+        if (gridObjectsAsset != null)
+        {
+            gridObjects = gridObjectsAsset.gridObjects;
+        }
+        else
+        {
+            Debug.LogError("[ERROR] GridObjectsAsset is missing!");
         }
     }
 
@@ -51,13 +73,13 @@ public class InteractionSystem : MonoBehaviour
         ghostMachine.GetComponent<Collider>().enabled = false;
         ghostMachine.GetComponent<Rigidbody>().detectCollisions = false;
         ApplyGhostMaterial(ghostMachine, testGhostMat);
-        gridsystem.SetGhostPrefab(ghostMachine);
+        gridSystem.SetGhostPrefab(ghostMachine);
     }
 
     public void DeSpawn()
     {
         heldMachinePrefab = null;
-        gridsystem.DeleteGhostPrefab();
+        gridSystem.DeleteGhostPrefab();
     }
 
     // This method is called when the player presses the interact button (E)
@@ -89,7 +111,7 @@ public class InteractionSystem : MonoBehaviour
             ghostMachine.GetComponent<Collider>().enabled = false;
             ghostMachine.GetComponent<Rigidbody>().detectCollisions = false;
             ApplyGhostMaterial(ghostMachine, testGhostMat);
-            gridsystem.SetGhostPrefab(ghostMachine);
+            gridSystem.SetGhostPrefab(ghostMachine);
         }
         else
         {
@@ -125,7 +147,7 @@ public class InteractionSystem : MonoBehaviour
                 }
                 // Reset held machine and remove ghost preview
                 heldMachinePrefab = null;
-                gridsystem.DeleteGhostPrefab();
+                gridSystem.DeleteGhostPrefab();
             }
             else
             {
@@ -183,7 +205,7 @@ public class InteractionSystem : MonoBehaviour
         {
             // Apply rotation around Y-axis
             heldMachinePrefab.transform.rotation *= Quaternion.Euler(0, 90f, 0);
-            gridsystem.rotateGhostPrefab90();
+            gridSystem.rotateGhostPrefab90();
             Debug.Log("Rotated held machine by 90 degrees.");
         }
     }

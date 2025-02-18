@@ -19,18 +19,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         playerInput = GetComponent<PlayerInput>();
-
-        //Find the BuildingSystem in the scene and assign interactionSystem
-        GameObject buildingSystemObj = GameObject.Find("BuildingSystem");
-        if (buildingSystemObj != null)
-        {
-            interactionSystem = buildingSystemObj.GetComponent<InteractionSystem>();
-            Debug.Log("[DEBUG] InteractionSystem assigned dynamically.");
-        }
-        else
-        {
-            Debug.LogError("[ERROR] BuildingSystem object not found in the scene!");
-        }
+        interactionSystem = GetComponent<InteractionSystem>();
     }
 
     void OnEnable()
