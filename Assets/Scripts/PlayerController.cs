@@ -3,43 +3,46 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    private Vector2 moveInput;  // Stores input values from WASD/Controller Stick
-    [SerializeField] private float moveSpeed = 5f;  
-    private Rigidbody rb;  // Rigidbody for physics-based movement
-    [SerializeField] private Transform playerIndicator; 
+    private Vector2 moveInput;
+    [SerializeField] private float moveSpeed = 5f;
+    private Rigidbody rb;
+    [SerializeField] private Transform playerIndicator;
     [SerializeField] private float rotationSpeed = 10f;
-    [SerializeField] private InteractionSystem interactionSystem; 
+    [SerializeField] private InteractionSystem interactionSystem;
     [SerializeField] private GameObject conveyorBeltPrefab;
-    private GameObject selectedSpawnPrefab; 
-    private bool spawnToggleMode = false; 
+    private GameObject selectedSpawnPrefab;
+    private bool spawnToggleMode = false;
 
-    private PlayerInput playerInput; // Reference to Unity's Player Input component
+    private PlayerInput playerInput;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        //playerInput.actions.Enable(); // ✅ Force enable input actions
-        playerInput = GetComponent<PlayerInput>(); // Get assigned PlayerInput component
+        playerInput = GetComponent<PlayerInput>();
     }
-
-    // void OnEnable()
-    // {
-    //     playerInput.onActionTriggered += HandleInput; // Subscribe to input events
-    // }
 
     void OnEnable()
     {
-        playerInput.onActionTriggered += HandleInput;
-        ////Debug onActionTriggered
-        // playerInput.onActionTriggered += ctx => 
-        // {
-        //     Debug.Log($"[DEBUG] Action Triggered: {ctx.action.name} | Phase: {ctx.phase} | Value: {ctx.ReadValueAsObject()}");
-        // };
+        // Bind input actions to their respective functions
+        playerInput.actions["Move"].performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        playerInput.actions["Move"].canceled += ctx => moveInput = Vector2.zero;
+
+        playerInput.actions["Interact"].performed += ctx => interactionSystem.TryInteract(playerIndicator.position);
+        playerInput.actions["Spawn"].performed += ctx => ToggleSpawn();
+        playerInput.actions["Rotate"].performed += ctx => interactionSystem.RotateHeldMachine90();
+        playerInput.actions["Delete"].performed += ctx => interactionSystem.TryDelete(playerIndicator.position);
     }
 
     void OnDisable()
     {
-        playerInput.onActionTriggered -= HandleInput; // Unsubscribe to prevent memory leaks
+        // Unbind input actions
+        playerInput.actions["Move"].performed -= ctx => moveInput = ctx.ReadValue<Vector2>();
+        playerInput.actions["Move"].canceled -= ctx => moveInput = Vector2.zero;
+
+        playerInput.actions["Interact"].performed -= ctx => interactionSystem.TryInteract(playerIndicator.position);
+        playerInput.actions["Spawn"].performed -= ctx => ToggleSpawn();
+        playerInput.actions["Rotate"].performed -= ctx => interactionSystem.RotateHeldMachine90();
+        playerInput.actions["Delete"].performed -= ctx => interactionSystem.TryDelete(playerIndicator.position);
     }
 
     void FixedUpdate()
@@ -52,68 +55,6 @@ public class PlayerController : MonoBehaviour
             Vector3 targetDirection = new Vector3(moveInput.x, 0, moveInput.y);
             Quaternion targetRotation = Quaternion.LookRotation(-targetDirection);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-    }
-
-    private void HandleInput(InputAction.CallbackContext context)
-    {
-        //Debug.Log($"Action Triggered: {context.action.name}");
-
-        switch (context.action.name)
-        {
-            case "Move":
-                moveInput = context.ReadValue<Vector2>();
-                //Debug.Log($"Move Input: {moveInput}");
-                break;
-            case "Interact":
-                //Debug.Log("Interact Pressed");
-                HandleInteract();
-                break;
-        }
-    }
-
-    private void HandleInteract()
-    {
-        //Debug.Log("Interact Pressed");
-        if (playerInput.currentControlScheme == "Keyboard")
-        {
-            if (Keyboard.current.eKey.wasPressedThisFrame)
-            {
-                interactionSystem.TryInteract(playerIndicator.position);
-            }
-            else if (Keyboard.current.digit1Key.wasPressedThisFrame)
-            {
-                ToggleSpawn();
-            }
-            else if (Keyboard.current.rKey.wasPressedThisFrame)
-            {
-                interactionSystem.RotateHeldMachine90();
-            }
-            else if (Keyboard.current.cKey.wasPressedThisFrame)
-            {
-                interactionSystem.TryDelete(playerIndicator.position);
-            }
-        }
-        else if (playerInput.currentControlScheme == "XboxController")
-        {
-            Gamepad gamepad = (Gamepad)playerInput.devices[0];
-
-            if (gamepad.buttonSouth.wasPressedThisFrame) // 'A' button on Xbox, 'X' on PlayStation
-            {
-                interactionSystem.TryInteract(playerIndicator.position);
-            }
-            else if (gamepad.buttonWest.wasPressedThisFrame) // 'X' button on Xbox, 'Square' on PlayStation
-            {
-                ToggleSpawn();
-            }
-            else if (gamepad.buttonNorth.wasPressedThisFrame) // 'Y' button on Xbox, 'Triangle' on PlayStation
-            {
-                interactionSystem.RotateHeldMachine90();
-            }
-            else if (gamepad.buttonEast.wasPressedThisFrame) // 'B' button on Xbox, 'Circle' on PlayStation
-            {
-                interactionSystem.TryDelete(playerIndicator.position);
-            }
         }
     }
 

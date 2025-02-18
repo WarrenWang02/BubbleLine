@@ -22,6 +22,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "20cd0a02-115d-4205-8023-a3c4d82fdc21",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Spawn",
+                    "type": "Button",
+                    "id": "460f5e4a-8d13-44ce-a86f-07b70f83064f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Delete",
+                    "type": "Button",
+                    "id": "efe668d5-85a8-44dc-ac1a-16cc706aba08",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -104,39 +131,6 @@
                 },
                 {
                     "name": "",
-                    "id": "b0309e14-ca69-46b6-9f07-0956cf4a4a8f",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard",
-                    "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cecbd140-9723-4338-b5d3-351467e2e980",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard",
-                    "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1c19484f-7f3c-47bf-83fa-7a77bf22b4d1",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard",
-                    "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "38422a77-6086-4300-8283-fb04e5297220",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
@@ -148,12 +142,12 @@
                 },
                 {
                     "name": "",
-                    "id": "0dff8a04-39d7-4ead-898d-8e22c0bc60a9",
-                    "path": "<Gamepad>/buttonNorth",
+                    "id": "b0309e14-ca69-46b6-9f07-0956cf4a4a8f",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";XboxController",
-                    "action": "Interact",
+                    "groups": ";Keyboard",
+                    "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -164,7 +158,40 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";XboxController",
-                    "action": "Interact",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cecbd140-9723-4338-b5d3-351467e2e980",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "Spawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0dff8a04-39d7-4ead-898d-8e22c0bc60a9",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XboxController",
+                    "action": "Spawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1c19484f-7f3c-47bf-83fa-7a77bf22b4d1",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "Delete",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -175,7 +202,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";XboxController",
-                    "action": "Interact",
+                    "action": "Delete",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
