@@ -37,7 +37,7 @@ public class MachineProcessor : MonoBehaviour
                 }
                 ingredientCounts[ingredientName]++;
 
-                Debug.Log($"Added [{ingredientName}] Current count: {ingredientCounts[ingredientName]}");
+                //Debug.Log($"Added [{ingredientName}] Current count: {ingredientCounts[ingredientName]}"); //Debug for counting current ingredient
 
                 CheckRecipe();
             }

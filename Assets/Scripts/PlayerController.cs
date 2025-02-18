@@ -3,47 +3,50 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    private PlayerInputActions playerInput;  // Reference to the input actions
-    private Vector2 moveInput;               // Stores input values from WASD/Arrow keys
-    [SerializeField] private float moveSpeed = 5f;             // Speed of the player movement
-    private Rigidbody rb;                    // Rigidbody for physics-based movement
-    [SerializeField] private Transform playerIndicator;    // Reference to the indicator object
-    [SerializeField] private float rotationSpeed = 10f;        // Speed of rotation (adjust for smoothness)
-    [SerializeField] private InteractionSystem interactionSystem;  // Reference to the InteractionSystem
-    [SerializeField] private GameObject conveyorBeltPrefab;  // Conveyor belt prefab to spawn
-    private GameObject selectedSpawnPrefab; //memory a prefab that lastly selected to spawn
-    private bool spawnToggleMode = false; //record Spawn is Toggle ON/OFF
+    private Vector2 moveInput;  // Stores input values from WASD/Controller Stick
+    [SerializeField] private float moveSpeed = 5f;  
+    private Rigidbody rb;  // Rigidbody for physics-based movement
+    [SerializeField] private Transform playerIndicator; 
+    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private InteractionSystem interactionSystem; 
+    [SerializeField] private GameObject conveyorBeltPrefab;
+    private GameObject selectedSpawnPrefab; 
+    private bool spawnToggleMode = false; 
 
+    private PlayerInput playerInput; // Reference to Unity's Player Input component
 
     void Awake()
     {
-        playerInput = new PlayerInputActions();  // Initialize the input actions
-        rb = GetComponent<Rigidbody>();          // Get the Rigidbody component
+        rb = GetComponent<Rigidbody>();
+        //playerInput.actions.Enable(); // ✅ Force enable input actions
+        playerInput = GetComponent<PlayerInput>(); // Get assigned PlayerInput component
     }
+
+    // void OnEnable()
+    // {
+    //     playerInput.onActionTriggered += HandleInput; // Subscribe to input events
+    // }
 
     void OnEnable()
     {
-        playerInput.Player.Move.performed += Move;   // Subscribe to the Move input action
-        playerInput.Player.Move.canceled += Move;    // Handle input stop
-        playerInput.Player.Interact.performed += Interact;  // Trigger interaction
-        playerInput.Enable();                        // Enable input listening
+        playerInput.onActionTriggered += HandleInput;
+        ////Debug onActionTriggered
+        // playerInput.onActionTriggered += ctx => 
+        // {
+        //     Debug.Log($"[DEBUG] Action Triggered: {ctx.action.name} | Phase: {ctx.phase} | Value: {ctx.ReadValueAsObject()}");
+        // };
     }
 
     void OnDisable()
     {
-        playerInput.Player.Move.performed -= Move;  // Unsubscribe to prevent memory leaks
-        playerInput.Player.Move.canceled -= Move;
-        playerInput.Player.Interact.performed -= Interact;
-        playerInput.Disable();                      // Disable input listening
+        playerInput.onActionTriggered -= HandleInput; // Unsubscribe to prevent memory leaks
     }
 
     void FixedUpdate()
     {
-        // Convert 2D input to 3D movement (X and Z axes)
         Vector3 movement = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * Time.fixedDeltaTime;
-        rb.MovePosition(rb.position + movement);  // Apply movement using Rigidbody
+        rb.MovePosition(rb.position + movement);
 
-        // Rotate player to face movement direction
         if (moveInput != Vector2.zero)
         {
             Vector3 targetDirection = new Vector3(moveInput.x, 0, moveInput.y);
@@ -52,49 +55,92 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // This method is called when Move input is detected
-    private void Move(InputAction.CallbackContext context)
+    private void HandleInput(InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>();  // Read input from the action
+        Debug.Log($"Action Triggered: {context.action.name}");
+
+        switch (context.action.name)
+        {
+            case "Move":
+                moveInput = context.ReadValue<Vector2>();
+                Debug.Log($"Move Input: {moveInput}");
+                break;
+            case "Interact":
+                Debug.Log("Interact Pressed");
+                HandleInteract();
+                break;
+        }
     }
 
-    // Handles all interactions (Pick up, Drop, Spawn)
-    private void Interact(InputAction.CallbackContext context)
+    private void HandleInteract()
     {
-        // Check which key was pressed and call the appropriate method
-        if (Keyboard.current.eKey.isPressed)
+        if (playerInput.currentControlScheme == "Keyboard & Mouse")
         {
-            // Picking up a machine
-            interactionSystem.TryInteract(playerIndicator.position);
-        }
-        else if (Keyboard.current.digit1Key.isPressed)
-        {
-            // Spawning a conveyor belt
-            if (conveyorBeltPrefab != null)
+            if (Keyboard.current.eKey.wasPressedThisFrame)
             {
-                if (!spawnToggleMode){
-                    selectedSpawnPrefab = conveyorBeltPrefab;
-                    interactionSystem.TrySpawn(selectedSpawnPrefab);
-                } else {
-                    interactionSystem.DeSpawn();
-                }
-                spawnToggleMode = !spawnToggleMode;
+                interactionSystem.TryInteract(playerIndicator.position);
+            }
+            else if (Keyboard.current.digit1Key.wasPressedThisFrame)
+            {
+                ToggleSpawn();
+            }
+            else if (Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                interactionSystem.RotateHeldMachine90();
+            }
+            else if (Keyboard.current.cKey.wasPressedThisFrame)
+            {
+                interactionSystem.TryDelete(playerIndicator.position);
+            }
+        }
+        else if (playerInput.currentControlScheme == "Gamepad")
+        {
+            Gamepad gamepad = (Gamepad)playerInput.devices[0];
+
+            if (gamepad.buttonSouth.wasPressedThisFrame) // 'A' button on Xbox, 'X' on PlayStation
+            {
+                interactionSystem.TryInteract(playerIndicator.position);
+            }
+            else if (gamepad.buttonWest.wasPressedThisFrame) // 'X' button on Xbox, 'Square' on PlayStation
+            {
+                ToggleSpawn();
+            }
+            else if (gamepad.buttonNorth.wasPressedThisFrame) // 'Y' button on Xbox, 'Triangle' on PlayStation
+            {
+                interactionSystem.RotateHeldMachine90();
+            }
+            else if (gamepad.buttonEast.wasPressedThisFrame) // 'B' button on Xbox, 'Circle' on PlayStation
+            {
+                interactionSystem.TryDelete(playerIndicator.position);
+            }
+        }
+    }
+
+    private void ToggleSpawn()
+    {
+        if (conveyorBeltPrefab != null)
+        {
+            if (!spawnToggleMode)
+            {
+                selectedSpawnPrefab = conveyorBeltPrefab;
+                interactionSystem.TrySpawn(selectedSpawnPrefab);
             }
             else
             {
-                Debug.LogError("Conveyor Belt Prefab is not assigned in the Inspector!");
+                interactionSystem.DeSpawn();
             }
+            spawnToggleMode = !spawnToggleMode;
         }
-        else if (Keyboard.current.rKey.isPressed){
-            interactionSystem.RotateHeldMachine90();
-        }
-        else if (Keyboard.current.cKey.isPressed){
-            interactionSystem.TryDelete(playerIndicator.position);
+        else
+        {
+            Debug.LogError("Conveyor Belt Prefab is not assigned in the Inspector!");
         }
     }
 
-    public void SpawnAgain(){
-        if (spawnToggleMode){
+    public void SpawnAgain()
+    {
+        if (spawnToggleMode)
+        {
             interactionSystem.TrySpawn(selectedSpawnPrefab);
         }
     }
