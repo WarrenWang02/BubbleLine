@@ -132,7 +132,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124116490533899670, guid: 209a7e61fba263d49a4ba2b27b737412, type: 3}
       propertyPath: m_Name
-      value: TestObject1 (1)
+      value: RecipeMachine (1)
       objectReference: {fileID: 0}
     - target: {fileID: 1028716412147279162, guid: 209a7e61fba263d49a4ba2b27b737412, type: 3}
       propertyPath: m_LocalPosition.x
@@ -199,7 +199,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124116490533899670, guid: 209a7e61fba263d49a4ba2b27b737412, type: 3}
       propertyPath: m_Name
-      value: TestObject1 (2)
+      value: RecipeMachine
       objectReference: {fileID: 0}
     - target: {fileID: 1028716412147279162, guid: 209a7e61fba263d49a4ba2b27b737412, type: 3}
       propertyPath: m_LocalPosition.x
@@ -740,7 +740,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124116490533899670, guid: 209a7e61fba263d49a4ba2b27b737412, type: 3}
       propertyPath: m_Name
-      value: TestObject1
+      value: RecipeMachine
       objectReference: {fileID: 0}
     - target: {fileID: 1028716412147279162, guid: 209a7e61fba263d49a4ba2b27b737412, type: 3}
       propertyPath: m_LocalScale.x
