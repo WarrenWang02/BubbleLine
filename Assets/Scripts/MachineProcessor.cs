@@ -181,4 +181,17 @@ public class MachineProcessor : MonoBehaviour
         // Reset coroutine reference
         productionCoroutine = null;
     }
+    public void SelectNextRecipe()
+    {
+        if (recipeData == null || recipeData.recipes.Count == 0)
+        {
+            Debug.LogWarning("No recipes available in RecipeData!");
+            return;
+        }
+
+        // Move to the next index, loop back to 0 if at the end
+        selectedRecipeIndex = (selectedRecipeIndex + 1) % recipeData.recipes.Count;
+
+        Debug.Log($"Selected recipe changed to: {recipeData.recipes[selectedRecipeIndex].recipeName}");
+    }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class InteractionSystem : MonoBehaviour
     [SerializeField] private GridObjectsAsset gridObjectsAsset; // Shared GridObjects dictionary
     [SerializeField] private Material testGhostMat;             // Manually assign in inspector
     [SerializeField] private DeletableMachinesList deletableMachinesList; // Manually assign in inspector
+    [SerializeField] private TuneableMachinesList tuneableMachinesList; // Manually assign in inspector
 
     private GameObject heldMachinePrefab = null; // Store the picked-up machine prefab
     private Dictionary<Vector3Int, GameObject> gridObjects; // Reference to asset dictionary
@@ -225,14 +227,23 @@ public class InteractionSystem : MonoBehaviour
                 gridObjects.Remove(cellPosition);
                 Debug.Log($"Deleted {machineToDelete.name} at {cellPosition}");
             }
+            else if (tuneableMachinesList.IsTuneable(machineToDelete.name))
+            {
+                TryTuningMachine(machineToDelete);
+            }
             else
             {
-                Debug.Log($"Cannot delete {machineToDelete.name}, not in deletable list.");
+                Debug.Log($"Cannot delete/Tune {machineToDelete.name}, not in the lists.");
             }
         }
         else
         {
-            Debug.Log("No machine to delete at this position.");
+            Debug.Log("No machine at this position.");
         }
+    }
+
+    private void TryTuningMachine(GameObject machine)
+    {
+        machine.GetComponent<MachineProcessor>().SelectNextRecipe();
     }
 }
