@@ -113,23 +113,61 @@ public class MachineProcessor : MonoBehaviour
 
         RecipeData.Recipe selectedRecipe = recipeData.recipes[selectedRecipeIndex];
 
+        // Update RecipeSprite's sprite based on the current recipe
+        UpdateRecipeSprite(selectedRecipe);
+
         // Convert recipe name to uppercase for the first line
-        string displayText = $"<b>Producing: {selectedRecipe.recipeName.ToUpper()}</b>\n";
+        string displayText = $"<size=28><b>Producing: {selectedRecipe.recipeName.ToUpper()}</b></size>\n";
 
         foreach (var requirement in selectedRecipe.ingredients)
         {
             string ingredientName = char.ToUpper(requirement.ingredientName[0]) + requirement.ingredientName.Substring(1);
             int currentAmount = ingredientCounts.ContainsKey(requirement.ingredientName) ? ingredientCounts[requirement.ingredientName] : 0;
-            
+
             // Color logic: Green if sufficient, Red if not enough
             string color = (currentAmount >= requirement.requiredAmount) ? "green" : "red";
-            
+
             // Format: Ingredient Name: <color=red/green>Amount</color>
-            displayText += $"{ingredientName}: <color={color}>{currentAmount}</color>  ";
+            displayText += $"{ingredientName}: <color={color}>{currentAmount}</color>\n";
         }
 
         // Assign formatted text to UI
         ingredientTextUI.text = displayText.TrimEnd(); // Trim to remove the last newline
+    }
+
+    private void UpdateRecipeSprite(RecipeData.Recipe recipe)
+    {
+        if (recipe.outputPrefab == null)
+        {
+            Debug.LogWarning($"No output prefab assigned for recipe: {recipe.recipeName}");
+            return;
+        }
+
+        // Find "RecipeSprite" child object
+        Transform recipeSpriteTransform = transform.Find("RecipeSprite");
+        if (recipeSpriteTransform == null)
+        {
+            Debug.LogWarning("RecipeSprite child object not found!");
+            return;
+        }
+
+        SpriteRenderer recipeSpriteRenderer = recipeSpriteTransform.GetComponent<SpriteRenderer>();
+        if (recipeSpriteRenderer == null)
+        {
+            Debug.LogWarning("RecipeSprite object does not have a SpriteRenderer!");
+            return;
+        }
+
+        // Get the sprite from the recipe's output prefab
+        SpriteRenderer prefabSpriteRenderer = recipe.outputPrefab.GetComponent<SpriteRenderer>();
+        if (prefabSpriteRenderer != null)
+        {
+            recipeSpriteRenderer.sprite = prefabSpriteRenderer.sprite; // Assign sprite
+        }
+        else
+        {
+            Debug.LogWarning($"Output prefab '{recipe.outputPrefab.name}' does not have a SpriteRenderer!");
+        }
     }
 
     private void ProduceOutput(RecipeData.Recipe recipe)
