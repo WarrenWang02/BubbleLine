@@ -85,13 +85,13 @@ public class MachineProcessor : MonoBehaviour
     {
         if (recipeData == null || recipeData.recipes.Count == 0)
         {
-            Debug.LogError("No RecipeData assigned or no recipes available!");
+            Debug.Log("No RecipeData assigned or no recipes available!");
             return;
         }
 
         if (selectedRecipeIndex < 0 || selectedRecipeIndex >= recipeData.recipes.Count)
         {
-            Debug.LogWarning("Selected recipe index is out of range!");
+            Debug.Log("Selected recipe index is out of range!");
             return;
         }
 
@@ -108,10 +108,28 @@ public class MachineProcessor : MonoBehaviour
 
     private void UpdateIngredientUI()
     {
-        if (ingredientTextUI != null)
+        if (ingredientTextUI == null || recipeData == null || recipeData.recipes.Count == 0)
+            return;
+
+        RecipeData.Recipe selectedRecipe = recipeData.recipes[selectedRecipeIndex];
+
+        // Convert recipe name to uppercase for the first line
+        string displayText = $"<b>Producing: {selectedRecipe.recipeName.ToUpper()}</b>\n";
+
+        foreach (var requirement in selectedRecipe.ingredients)
         {
-            ingredientTextUI.text = string.Join(", ", ingredientCounts.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
+            string ingredientName = char.ToUpper(requirement.ingredientName[0]) + requirement.ingredientName.Substring(1);
+            int currentAmount = ingredientCounts.ContainsKey(requirement.ingredientName) ? ingredientCounts[requirement.ingredientName] : 0;
+            
+            // Color logic: Green if sufficient, Red if not enough
+            string color = (currentAmount >= requirement.requiredAmount) ? "green" : "red";
+            
+            // Format: Ingredient Name: <color=red/green>Amount</color>
+            displayText += $"{ingredientName}: <color={color}>{currentAmount}</color>  ";
         }
+
+        // Assign formatted text to UI
+        ingredientTextUI.text = displayText.TrimEnd(); // Trim to remove the last newline
     }
 
     private void ProduceOutput(RecipeData.Recipe recipe)
