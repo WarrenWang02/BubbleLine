@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
+using System.Linq;
 
 public class MachineProcessor : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class MachineProcessor : MonoBehaviour
     [SerializeField] private Image progressBar; // should be foreground image in the child
     [SerializeField] private float productionTime = 3f; // Editable countdown time in Inspector
     [SerializeField] private int selectedRecipeIndex = 0;
+    [SerializeField] private TextMeshProUGUI ingredientTextUI; // UI Text for ingredient display
 
     private Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
     private Coroutine productionCoroutine; // To handle the countdown process
@@ -31,6 +34,8 @@ public class MachineProcessor : MonoBehaviour
         {
             progressBar.fillAmount = 0f;
         }
+
+        UpdateIngredientUI(); // Initialize UI text
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,20 +43,26 @@ public class MachineProcessor : MonoBehaviour
         if (other.CompareTag("Ingredient"))
         {
             string ingredientName = GetNormalizedIngredientName(other.name);
-            Destroy(other.gameObject); // Remove ingredient
+            RecipeData.Recipe selectedRecipe = recipeData.recipes[selectedRecipeIndex];
 
-            if (!string.IsNullOrEmpty(ingredientName))
+            if (selectedRecipe.ingredients.Exists(i => i.ingredientName == ingredientName))
             {
+                // Only record the ingredient if it's in the selected recipe
                 if (!ingredientCounts.ContainsKey(ingredientName))
                 {
                     ingredientCounts[ingredientName] = 0;
                 }
                 ingredientCounts[ingredientName]++;
-
-                //Debug.Log($"Added [{ingredientName}] Current count: {ingredientCounts[ingredientName]}"); //Debug for counting current ingredient
-
-                CheckRecipe();
+                
+                UpdateIngredientUI(); // Update UI with new ingredient count
             }
+            else
+            {
+                Debug.LogWarning($"[{ingredientName}] is not in the recipe and has been destroyed.");
+            }
+
+            Destroy(other.gameObject); // Always destroy the ingredient
+            CheckRecipe();
         }
     }
 
@@ -92,6 +103,14 @@ public class MachineProcessor : MonoBehaviour
             {
                 productionCoroutine = StartCoroutine(ProductionCountdown(selectedRecipe));
             }
+        }
+    }
+
+    private void UpdateIngredientUI()
+    {
+        if (ingredientTextUI != null)
+        {
+            ingredientTextUI.text = string.Join(", ", ingredientCounts.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
         }
     }
 

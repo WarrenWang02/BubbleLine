@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: TuneableMachinesList
   m_EditorClassIdentifier: 
   TuneableMachineNames:
-  - conveyorbelt
+  - recipemachine
