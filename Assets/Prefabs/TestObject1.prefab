@@ -129,6 +129,7 @@ MonoBehaviour:
   recipeData: {fileID: 11400000, guid: d2877be7b1729ff46aab0a96e1fca1a9, type: 2}
   progressBar: {fileID: 6000255798899564809}
   productionTime: 3
+  selectedRecipeIndex: 0
 --- !u!54 &2245417360940767603
 Rigidbody:
   m_ObjectHideFlags: 0

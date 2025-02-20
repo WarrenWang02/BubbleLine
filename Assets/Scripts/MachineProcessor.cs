@@ -11,6 +11,7 @@ public class MachineProcessor : MonoBehaviour
     [SerializeField] private RecipeData recipeData; // New scriptable object reference
     [SerializeField] private Image progressBar; // should be foreground image in the child
     [SerializeField] private float productionTime = 3f; // Editable countdown time in Inspector
+    [SerializeField] private int selectedRecipeIndex = 0;
 
     private Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
     private Coroutine productionCoroutine; // To handle the countdown process
@@ -71,23 +72,29 @@ public class MachineProcessor : MonoBehaviour
 
     private void CheckRecipe()
     {
-        if (recipeData == null)
+        if (recipeData == null || recipeData.recipes.Count == 0)
         {
-            Debug.LogError("No RecipeData assigned!");
+            Debug.LogError("No RecipeData assigned or no recipes available!");
             return;
         }
 
-        RecipeData.Recipe matchingRecipe = recipeData.GetMatchingRecipe(ingredientCounts);
-
-        if (matchingRecipe != null && HasEnoughIngredients(matchingRecipe))
+        if (selectedRecipeIndex < 0 || selectedRecipeIndex >= recipeData.recipes.Count)
         {
-            // Start countdown instead of immediately producing output
+            Debug.LogWarning("Selected recipe index is out of range!");
+            return;
+        }
+
+        RecipeData.Recipe selectedRecipe = recipeData.recipes[selectedRecipeIndex];
+
+        if (HasEnoughIngredients(selectedRecipe))
+        {
             if (productionCoroutine == null)
             {
-                productionCoroutine = StartCoroutine(ProductionCountdown(matchingRecipe));
+                productionCoroutine = StartCoroutine(ProductionCountdown(selectedRecipe));
             }
         }
     }
+
     private void ProduceOutput(RecipeData.Recipe recipe)
     {
         if (recipe.outputPrefab == null)

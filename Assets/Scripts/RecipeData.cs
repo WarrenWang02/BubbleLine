@@ -20,27 +20,4 @@ public class RecipeData : ScriptableObject
     }
 
     public List<Recipe> recipes = new List<Recipe>();
-
-    public Recipe GetMatchingRecipe(Dictionary<string, int> currentIngredients)
-    {
-        foreach (var recipe in recipes)
-        {
-            if (HasEnoughIngredients(recipe, currentIngredients))
-                return recipe; // Now we return the full recipe, including the prefab
-        }
-        return null;
-    }
-
-    private bool HasEnoughIngredients(Recipe recipe, Dictionary<string, int> currentIngredients)
-    {
-        foreach (var requirement in recipe.ingredients)
-        {
-            if (!currentIngredients.ContainsKey(requirement.ingredientName) ||
-                currentIngredients[requirement.ingredientName] < requirement.requiredAmount)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
 }
