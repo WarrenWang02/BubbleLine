@@ -293,6 +293,10 @@ MonoBehaviour:
   testGhostMat: {fileID: 2100000, guid: 3bd463840221b6d4198d4e78db38dc5e, type: 2}
   deletableMachinesList: {fileID: 11400000, guid: 6ce0ff21b5ecc4847bc6536dbe3940f0, type: 2}
   tuneableMachinesList: {fileID: 11400000, guid: 3d706d6ec3187e0478f4545366ac7795, type: 2}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  deleteSFX: {fileID: 0}
+  errorSFX: {fileID: 0}
 --- !u!114 &-4983584592230035247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,6 +312,8 @@ MonoBehaviour:
   grid: {fileID: 0}
   playerIndicator: {fileID: 0}
   indicatorPrefab: {fileID: 6361544123652104997, guid: 8f711ffdb17cd634c8c5dd57b37e8292, type: 3}
+  gridWidth: 20
+  gridHeight: 20
   ghostPrefab: {fileID: 0}
 --- !u!82 &7089120168104265002
 AudioSource:
