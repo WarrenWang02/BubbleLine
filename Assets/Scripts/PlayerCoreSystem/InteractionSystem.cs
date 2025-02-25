@@ -9,6 +9,12 @@ public class InteractionSystem : MonoBehaviour
     [SerializeField] private Material testGhostMat;             // Manually assign in inspector
     [SerializeField] private DeletableMachinesList deletableMachinesList; // Manually assign in inspector
     [SerializeField] private TuneableMachinesList tuneableMachinesList; // Manually assign in inspector
+    [SerializeField] private AudioClip pickSFX;
+    [SerializeField] private AudioClip dropSFX;
+    [SerializeField] private AudioClip deleteSFX;
+    [SerializeField] private AudioClip errorSFX;
+
+    private AudioSource audioSource;
 
     private GameObject heldMachinePrefab = null; // Store the picked-up machine prefab
     private Dictionary<Vector3Int, GameObject> gridObjects; // Reference to asset dictionary
@@ -19,6 +25,8 @@ public class InteractionSystem : MonoBehaviour
 
     void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        
         // Dynamically find Grid
         GameObject gridObj = GameObject.Find("Grid");
         if (gridObj != null)
@@ -101,6 +109,7 @@ public class InteractionSystem : MonoBehaviour
         if (gridObjects.ContainsKey(indicatorCellPosition))
         {
             GameObject machineToPick = gridObjects[indicatorCellPosition];
+            PlaySound(pickSFX);
             Debug.Log("Picked up: " + machineToPick.name);
 
             // Store the picked-up machine reference
@@ -117,6 +126,7 @@ public class InteractionSystem : MonoBehaviour
         }
         else
         {
+            PlaySound(errorSFX);
             Debug.Log("No machine at this position.");
         }
     }
@@ -140,6 +150,7 @@ public class InteractionSystem : MonoBehaviour
                 newMachine.SetActive(true);
 
                 gridObjects.Add(dropCellPosition, newMachine);
+                PlaySound(dropSFX);
                 Debug.Log("Dropped machine at: " + dropCellPosition);
 
                 //destroying original prefab in the field
@@ -153,11 +164,13 @@ public class InteractionSystem : MonoBehaviour
             }
             else
             {
+                PlaySound(errorSFX);
                 Debug.Log("Drop failed: Cell already occupied.");
             }
         }
         else
         {
+            PlaySound(errorSFX);
             Debug.Log("No machine to drop.");
         }
 
@@ -225,6 +238,7 @@ public class InteractionSystem : MonoBehaviour
             {
                 Destroy(machineToDelete);
                 gridObjects.Remove(cellPosition);
+                PlaySound(deleteSFX);
                 Debug.Log($"Deleted {machineToDelete.name} at {cellPosition}");
             }
             else if (tuneableMachinesList.IsTuneable(machineToDelete.name))
@@ -233,11 +247,13 @@ public class InteractionSystem : MonoBehaviour
             }
             else
             {
+                PlaySound(errorSFX);
                 Debug.Log($"Cannot delete/Tune {machineToDelete.name}, not in the lists.");
             }
         }
         else
         {
+            PlaySound(errorSFX);
             Debug.Log("No machine at this position.");
         }
     }
@@ -245,5 +261,18 @@ public class InteractionSystem : MonoBehaviour
     private void TryTuningMachine(GameObject machine)
     {
         machine.GetComponent<MachineProcessor>().SelectNextRecipe();
+    }
+
+    // Plays the given AudioClip
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;  // Safety check
+
+        if (audioSource.clip != clip)  // Only update if the clip is different
+        {
+            audioSource.clip = clip;  // Bind new clip
+        }
+
+        audioSource.Play();  // Play the sound
     }
 }
