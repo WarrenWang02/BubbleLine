@@ -27,7 +27,7 @@ public class GridObjectsInitializer : MonoBehaviour
                 if (!gridObjectsAsset.gridObjects.ContainsKey(cellPosition))
                 {
                     gridObjectsAsset.gridObjects.Add(cellPosition, machine.gameObject);
-                    Debug.Log($"[DEBUG] Machine registered at {cellPosition}");
+                    // Debug.Log($"[DEBUG] Machine registered at {cellPosition}");
                 }
             }
         }

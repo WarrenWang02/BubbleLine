@@ -117,7 +117,8 @@ public class MachineProcessor : MonoBehaviour
         UpdateRecipeSprite(selectedRecipe);
 
         // Convert recipe name to uppercase for the first line
-        string displayText = $"<size=28><b>Producing: {selectedRecipe.recipeName.ToUpper()}</b></size>\n";
+        // string displayText = $"<size=28><b>Producing: {selectedRecipe.recipeName.ToUpper()}</b></size>\n";
+        string displayText = $"";
 
         foreach (var requirement in selectedRecipe.ingredients)
         {
@@ -128,7 +129,7 @@ public class MachineProcessor : MonoBehaviour
             string color = (currentAmount >= requirement.requiredAmount) ? "green" : "red";
 
             // Format: Ingredient Name: <color=red/green>Amount</color>
-            displayText += $"{ingredientName}: <color={color}>{currentAmount}</color>\n";
+            displayText += $"{ingredientName}: <color={color}>{currentAmount}</color>  ";
         }
 
         // Assign formatted text to UI
