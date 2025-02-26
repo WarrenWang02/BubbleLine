@@ -1,34 +1,35 @@
 using UnityEngine;
 
-[ExecuteAlways] // Runs in Editor and Play Mode
+[ExecuteAlways] // Runs in both Editor and Play Mode
 public class GroundManager : MonoBehaviour
 {
-    [SerializeField] private int gridWidth = 20;
-    [SerializeField] private int gridHeight = 20;
+    [SerializeField, Min(2)] private int gridWidth = 20;  // Min 2, even only
+    [SerializeField, Min(2)] private int gridHeight = 20; // Min 2, even only
     private Transform groundTransform;
 
     void Awake()
     {
         groundTransform = transform;
-        AdjustGroundSize(); // Ensures the correct size in game
+        AdjustGroundSize();
     }
 
-    // This will run automatically whenever the script values are changed in the Inspector
+    // This ensures values stay even and updates ground size in Editor
     void OnValidate()
     {
-        if (!Application.isPlaying) // Only apply in Editor mode
+        if (!Application.isPlaying) // Prevents runtime interference
         {
+            gridWidth = Mathf.Max(2, gridWidth / 2 * 2);   // Forces even, min 2
+            gridHeight = Mathf.Max(2, gridHeight / 2 * 2); // Forces even, min 2
             AdjustGroundSize();
         }
     }
 
-    // Public method to provide grid size to other scripts
     public int GetGridWidth() => gridWidth;
     public int GetGridHeight() => gridHeight;
 
     private void AdjustGroundSize()
     {
         transform.localScale = new Vector3(gridWidth, gridHeight, 1);
-        transform.position = Vector3.zero; // Ensure position is fixed
+        transform.position = Vector3.zero; // Keep fixed
     }
 }
