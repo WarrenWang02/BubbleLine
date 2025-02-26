@@ -22,6 +22,10 @@ public class GroundManager : MonoBehaviour
         }
     }
 
+    // Public method to provide grid size to other scripts
+    public int GetGridWidth() => gridWidth;
+    public int GetGridHeight() => gridHeight;
+
     private void AdjustGroundSize()
     {
         transform.localScale = new Vector3(gridWidth, gridHeight, 1);

@@ -15,11 +15,29 @@ public class PlayerController : MonoBehaviour
 
     private PlayerInput playerInput;
 
+    private GroundManager groundManager;
+    private int gridWidth;                     // Width of the gird system
+    private int gridHeight;                    // Height of the gird system
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         playerInput = GetComponent<PlayerInput>();
         interactionSystem = GetComponent<InteractionSystem>();
+
+        //Find ground in the scene and import width and height
+        GameObject groundObj = GameObject.Find("Ground");
+        if (groundObj != null)
+        {
+            groundManager = groundObj.GetComponent<GroundManager>();
+            //Debug.Log("[DEBUG] Ground's manager assigned to groundManager.");
+            gridWidth = groundManager.GetGridWidth();
+            gridHeight = groundManager.GetGridHeight();
+        }
+        else
+        {
+            Debug.LogError("[ERROR] Ground not found in the scene!");
+        }
     }
 
     void OnEnable()
@@ -28,10 +46,10 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Move"].performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerInput.actions["Move"].canceled += ctx => moveInput = Vector2.zero;
 
-        playerInput.actions["Interact"].performed += ctx => interactionSystem.TryInteract(playerIndicator.position);
+        playerInput.actions["Interact"].performed += ctx => interactionSystem.TryInteract(GetClampedIndicatorPosition());
         playerInput.actions["Spawn"].performed += ctx => ToggleSpawn();
         playerInput.actions["Rotate"].performed += ctx => interactionSystem.RotateHeldMachine90();
-        playerInput.actions["Delete"].performed += ctx => interactionSystem.TryDelete(playerIndicator.position);
+        playerInput.actions["Delete"].performed += ctx => interactionSystem.TryDelete(GetClampedIndicatorPosition());
     }
 
     void OnDisable()
@@ -40,10 +58,10 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Move"].performed -= ctx => moveInput = ctx.ReadValue<Vector2>();
         playerInput.actions["Move"].canceled -= ctx => moveInput = Vector2.zero;
 
-        playerInput.actions["Interact"].performed -= ctx => interactionSystem.TryInteract(playerIndicator.position);
+        playerInput.actions["Interact"].performed -= ctx => interactionSystem.TryInteract(GetClampedIndicatorPosition());
         playerInput.actions["Spawn"].performed -= ctx => ToggleSpawn();
         playerInput.actions["Rotate"].performed -= ctx => interactionSystem.RotateHeldMachine90();
-        playerInput.actions["Delete"].performed -= ctx => interactionSystem.TryDelete(playerIndicator.position);
+        playerInput.actions["Delete"].performed -= ctx => interactionSystem.TryDelete(GetClampedIndicatorPosition());
     }
 
     void FixedUpdate()
@@ -87,4 +105,16 @@ public class PlayerController : MonoBehaviour
             interactionSystem.TrySpawn(selectedSpawnPrefab);
         }
     }
+
+    private Vector3 GetClampedIndicatorPosition()
+    {
+        Vector3 clampedPosition = playerIndicator.position;
+
+        // Clamp the world position directly
+        clampedPosition.x = Mathf.Clamp(clampedPosition.x, -gridWidth / 2, gridWidth / 2 - 1);
+        clampedPosition.z = Mathf.Clamp(clampedPosition.z, -gridHeight / 2, gridHeight / 2 - 1);
+
+        return clampedPosition;
+    }
+
 }

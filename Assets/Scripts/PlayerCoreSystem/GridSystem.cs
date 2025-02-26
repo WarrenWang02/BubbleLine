@@ -6,20 +6,35 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private Grid grid;                         // Unity's Grid component
     [SerializeField] private Transform playerIndicator;         // Reference to the player's facing direction
     [SerializeField] private GameObject indicatorPrefab;        // Visual frame for selected grid cell
-    public int gridWidth;                     // Width of the gird system
-    public int gridHeight;                    // Height of the gird system
+    private GroundManager groundManager;
+    private int gridWidth;                     // Width of the gird system
+    private int gridHeight;                    // Height of the gird system
 
     private GameObject currentIndicator; // Instance of the indicator prefab
     [SerializeField] private GameObject ghostPrefab;      // Reference to the ghost object (no instantiation)
 
     void Awake()
     {
+        //Find ground in the scene and import width and height
+        GameObject groundObj = GameObject.Find("Ground");
+        if (groundObj != null)
+        {
+            groundManager = groundObj.GetComponent<GroundManager>();
+            //Debug.Log("[DEBUG] Ground's manager assigned to groundManager.");
+            gridWidth = groundManager.GetGridWidth();
+            gridHeight = groundManager.GetGridHeight();
+        }
+        else
+        {
+            Debug.LogError("[ERROR] Ground not found in the scene!");
+        }
+
         //Find Grid in the scene
         GameObject gridObj = GameObject.Find("Grid");
         if (gridObj != null)
         {
             grid = gridObj.GetComponent<Grid>();
-            Debug.Log("[DEBUG] Grid assigned to GridSystem.");
+            //Debug.Log("[DEBUG] Grid assigned to GridSystem.");
         }
         else
         {
