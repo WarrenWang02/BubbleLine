@@ -6,6 +6,8 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private Grid grid;                         // Unity's Grid component
     [SerializeField] private Transform playerIndicator;         // Reference to the player's facing direction
     [SerializeField] private GameObject indicatorPrefab;        // Visual frame for selected grid cell
+    public int gridWidth;                     // Width of the gird system
+    public int gridHeight;                    // Height of the gird system
 
     private GameObject currentIndicator; // Instance of the indicator prefab
     [SerializeField] private GameObject ghostPrefab;      // Reference to the ghost object (no instantiation)
@@ -57,6 +59,10 @@ public class GridSystem : MonoBehaviour
         // Convert the player indicator's world position to the nearest grid cell
         Vector3Int cellPosition = grid.WorldToCell(playerIndicator.position);
 
+        // Clamp the cell position within the grid bounds
+        cellPosition.x = Mathf.Clamp(cellPosition.x, -gridWidth / 2, gridWidth / 2 - 1);
+        cellPosition.z = Mathf.Clamp(cellPosition.z, -gridHeight / 2, gridHeight / 2 - 1); // if a 2D XZ grid
+
         // Get the center of the grid cell in world space
         Vector3 snappedPosition = grid.GetCellCenterWorld(cellPosition);
 
@@ -73,6 +79,11 @@ public class GridSystem : MonoBehaviour
 
         // Get the indicator's current grid position
         Vector3Int cellPosition = grid.WorldToCell(playerIndicator.position);
+
+        // Clamp the cell position within the grid bounds
+        cellPosition.x = Mathf.Clamp(cellPosition.x, -gridWidth / 2, gridWidth / 2 - 1);
+        cellPosition.z = Mathf.Clamp(cellPosition.z, -gridHeight / 2, gridHeight / 2 - 1); // if a 2D XZ grid
+
         Vector3 ghostPosition = grid.GetCellCenterWorld(cellPosition);
 
         // Maintain the ghost object's original height
