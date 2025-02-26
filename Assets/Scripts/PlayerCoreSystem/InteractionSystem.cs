@@ -9,6 +9,8 @@ public class InteractionSystem : MonoBehaviour
     [SerializeField] private Material testGhostMat;             // Manually assign in inspector
     [SerializeField] private DeletableMachinesList deletableMachinesList; // Manually assign in inspector
     [SerializeField] private TuneableMachinesList tuneableMachinesList; // Manually assign in inspector
+    
+    // SFX part
     [SerializeField] private AudioClip pickSFX;
     [SerializeField] private AudioClip dropSFX;
     [SerializeField] private AudioClip deleteSFX;
