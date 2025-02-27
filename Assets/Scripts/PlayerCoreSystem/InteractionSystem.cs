@@ -147,7 +147,7 @@ public class InteractionSystem : MonoBehaviour
                 float correctY = heldMachinePrefab.transform.position.y;
                 dropPosition.y = correctY;
 
-                GameObject newMachine = Instantiate(heldMachinePrefab, dropPosition, heldMachinePrefab.transform.rotation, machinesContainer);
+                GameObject newMachine = Instantiate(heldMachinePrefab, dropPosition, heldMachinePrefab.transform.rotation, heldMachinePrefab.transform.parent);
                 newMachine.name = heldMachinePrefab.name;
                 newMachine.SetActive(true);
 
