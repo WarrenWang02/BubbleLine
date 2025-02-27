@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private InteractionSystem interactionSystem;
     [SerializeField] private DialogueUIManager dialogManager;
+    [SerializeField] private MenuManager menuManager;
     [SerializeField] private GameObject conveyorBeltPrefab;
     private GameObject selectedSpawnPrefab;
     private bool spawnToggleMode = false;
@@ -40,7 +41,7 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("[ERROR] Ground not found in the scene!");
         }
 
-        //Find ground in the scene and import width and height
+        //Find DialogUIManager in the scene
         GameObject UIManager = GameObject.Find("DialogUIManager");
         if (UIManager != null)
         {
@@ -50,11 +51,22 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("[ERROR] DialogUIManager not found in the scene!");
         }
+
+        //Find MenuManager in the scene
+        GameObject menuUI = GameObject.Find("MenuManager");
+        if (menuUI != null)
+        {
+            menuManager = menuUI.GetComponent<MenuManager>();
+        }
+        else
+        {
+            Debug.LogError("[ERROR] MenuManager not found in the scene!");
+        }
     }
 
     void OnEnable()
     {
-        // Bind input actions to their respective functions
+        // Player Input Map
         playerInput.actions["Move"].performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerInput.actions["Move"].canceled += ctx => moveInput = Vector2.zero;
 
@@ -63,12 +75,16 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Rotate"].performed += ctx => interactionSystem.RotateHeldMachine90();
         playerInput.actions["Delete"].performed += ctx => interactionSystem.TryDelete(GetClampedIndicatorPosition());
 
+        // Dialog input Map
         playerInput.actions["MoveNext"].performed += ctx => dialogManager.MoveNextDialogue();
+
+        // In game UI
+        playerInput.actions["Esc"].performed += ctx => menuManager.TogglePause();
     }
 
     void OnDisable()
     {
-        // Unbind input actions
+        // Player Input Map
         playerInput.actions["Move"].performed -= ctx => moveInput = ctx.ReadValue<Vector2>();
         playerInput.actions["Move"].canceled -= ctx => moveInput = Vector2.zero;
 
@@ -77,7 +93,11 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Rotate"].performed -= ctx => interactionSystem.RotateHeldMachine90();
         playerInput.actions["Delete"].performed -= ctx => interactionSystem.TryDelete(GetClampedIndicatorPosition());
 
+        // Dialog input Map
         playerInput.actions["MoveNext"].performed -= ctx => dialogManager.MoveNextDialogue();
+
+        // In game UI
+        playerInput.actions["Esc"].performed += ctx => menuManager.TogglePause();
     }
 
     void FixedUpdate()
