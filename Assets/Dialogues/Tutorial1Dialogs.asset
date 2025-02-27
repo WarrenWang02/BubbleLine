@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Tutorial1Dialogs
   m_EditorClassIdentifier: 
   dialogueEntries:
-  - "First Line\t"
-  - "Second Line\t"
+  - "First Line\t1First Line\t1First Line\t1First Line\t1First Line\t1First Line\t1First
+    Li"
+  - "Second Line\tSecond Line\tSecond Line\tSecond Line\tSecond Line\t"
