@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 7089120168104265002}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -312,8 +312,6 @@ MonoBehaviour:
   grid: {fileID: 0}
   playerIndicator: {fileID: 0}
   indicatorPrefab: {fileID: 6361544123652104997, guid: 8f711ffdb17cd634c8c5dd57b37e8292, type: 3}
-  gridWidth: 20
-  gridHeight: 20
   ghostPrefab: {fileID: 0}
 --- !u!82 &7089120168104265002
 AudioSource:
