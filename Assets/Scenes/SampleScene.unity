@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialoguePanel: {fileID: 228876394}
-  dialogueText: {fileID: 0}
+  dialogueText: {fileID: 2083080846}
 --- !u!4 &86496903
 Transform:
   m_ObjectHideFlags: 0

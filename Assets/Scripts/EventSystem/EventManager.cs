@@ -11,8 +11,12 @@ public class EventManager : MonoBehaviour
 
     [SerializeField] private MachinePlacementChecker machinePlacementChecker;
     [SerializeField] private MachineRemovalChecker machineRemovalChecker;
+
+    [SerializeField] private DialogueUIManager dialogueUIManager;
+    [SerializeField] private DialogueData Tutorial1Dialog;
     private void Start()
     {
+        // This part is one time use like, not modular engough, if needed, make it better later.
         if (machinePlacementChecker != null)
         {
             // Subscribe to placement detection event
@@ -49,6 +53,7 @@ public class EventManager : MonoBehaviour
     public void Tutorial1Trigger()
     {
         EnableAndRegisterMachines(tutorial1Container);
+        dialogueUIManager.StartDialogue(Tutorial1Dialog);
 
         // Start machine placement detection after Tutorial 1 is triggered
         machinePlacementChecker.StartDetection();

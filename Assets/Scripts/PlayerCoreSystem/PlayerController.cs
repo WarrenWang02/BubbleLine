@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform playerIndicator;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private InteractionSystem interactionSystem;
+    [SerializeField] private DialogueUIManager dialogManager;
     [SerializeField] private GameObject conveyorBeltPrefab;
     private GameObject selectedSpawnPrefab;
     private bool spawnToggleMode = false;
@@ -38,6 +39,17 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("[ERROR] Ground not found in the scene!");
         }
+
+        //Find ground in the scene and import width and height
+        GameObject UIManager = GameObject.Find("DialogUIManager");
+        if (UIManager != null)
+        {
+            dialogManager = UIManager.GetComponent<DialogueUIManager>();
+        }
+        else
+        {
+            Debug.LogError("[ERROR] DialogUIManager not found in the scene!");
+        }
     }
 
     void OnEnable()
@@ -50,6 +62,8 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Spawn"].performed += ctx => ToggleSpawn();
         playerInput.actions["Rotate"].performed += ctx => interactionSystem.RotateHeldMachine90();
         playerInput.actions["Delete"].performed += ctx => interactionSystem.TryDelete(GetClampedIndicatorPosition());
+
+        playerInput.actions["MoveNext"].performed += ctx => dialogManager.MoveNextDialogue();
     }
 
     void OnDisable()
@@ -62,6 +76,8 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Spawn"].performed -= ctx => ToggleSpawn();
         playerInput.actions["Rotate"].performed -= ctx => interactionSystem.RotateHeldMachine90();
         playerInput.actions["Delete"].performed -= ctx => interactionSystem.TryDelete(GetClampedIndicatorPosition());
+
+        playerInput.actions["MoveNext"].performed -= ctx => dialogManager.MoveNextDialogue();
     }
 
     void FixedUpdate()
