@@ -15,6 +15,13 @@ public class Level1OrderControl : MonoBehaviour
     private void Start()
     {
         lastCheckTime = levelControl.GetLevelTime(); // Get initial level time
+        
+        // Ensure currentOrder starts empty
+        if (currentOrder.orders != null)
+        {
+            currentOrder.orders.Clear();
+        }
+        
         AddNextOrder(); // Start with the first order
     }
 
@@ -23,7 +30,7 @@ public class Level1OrderControl : MonoBehaviour
         float levelTime = levelControl.GetLevelTime(); // Continuously sync level time
 
         // Check if we are due to add a new order based on time progression
-        if (currentPhase < 3 && (levelTime <= lastCheckTime - 30f || currentOrder.orders.Count < currentPhase + 1))
+        if (currentPhase < 3 && (levelTime <= lastCheckTime - 30f) || currentOrder.orders.Count < currentPhase)
         {
             AddNextOrder();
             lastCheckTime = levelTime; // Reset last check time

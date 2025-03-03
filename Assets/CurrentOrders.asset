@@ -23,8 +23,3 @@ MonoBehaviour:
     Price: 25
     Time: 200
     AppearRate: 25
-  - Product: {fileID: 7089454742129521831, guid: a590440d380aa0649a9a892880ccac1d, type: 3}
-    RequireAmount: 8
-    Price: 32
-    Time: 220
-    AppearRate: 15
