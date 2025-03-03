@@ -12,4 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86cac6f9fbba06b4da1251fbd9a81ef5, type: 3}
   m_Name: CurrentOrders
   m_EditorClassIdentifier: 
-  orders: []
+  orders:
+  - Product: {fileID: 7089454742129521831, guid: e6d982b6d89778f47a3ab405bb8091e1, type: 3}
+    RequireAmount: 10
+    Price: 20
+    Time: 180
+    AppearRate: 25
+  - Product: {fileID: 7089454742129521831, guid: 8fed1fa48c7dfad459cdc56820890808, type: 3}
+    RequireAmount: 10
+    Price: 25
+    Time: 200
+    AppearRate: 25
+  - Product: {fileID: 7089454742129521831, guid: a590440d380aa0649a9a892880ccac1d, type: 3}
+    RequireAmount: 8
+    Price: 32
+    Time: 220
+    AppearRate: 15
