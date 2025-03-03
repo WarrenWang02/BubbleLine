@@ -94,25 +94,37 @@ public class LevelControl : MonoBehaviour
         // Adjust the number of spawned prefabs to match the number of orders
         while (spawnedOrders.Count < currentOrders.orders.Count)
         {
-            Vector3 spawnPos = orderPrefab.transform.position; // Default prefab position
-            if (spawnedOrders.Count > 0)
-            {
-                float prefabWidth = orderPrefab.GetComponent<RectTransform>().sizeDelta.x;
-                spawnPos.x += (prefabWidth + 10) * spawnedOrders.Count; // Offset next order
-            }
-
-            GameObject newOrder = Instantiate(orderPrefab, spawnPos, Quaternion.identity, orderCanvas.transform);
+            GameObject newOrder = Instantiate(orderPrefab, orderCanvas.transform);
             spawnedOrders.Add(newOrder);
         }
 
-        // Update child texts for each spawned order
+        // Update position and text of each spawned order
         for (int i = 0; i < spawnedOrders.Count; i++)
         {
             if (i >= currentOrders.orders.Count) break; // Prevent errors if list changes
 
-            Orders currentOrder = currentOrders.orders[i];
             GameObject orderObject = spawnedOrders[i];
+            Orders currentOrder = currentOrders.orders[i];
 
+            // Set position based on order index
+            RectTransform rectTransform = orderObject.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                if (i > 0) // Only adjust position for the second order onwards
+                {
+                    RectTransform previousRectTransform = spawnedOrders[i - 1].GetComponent<RectTransform>();
+                    if (previousRectTransform != null)
+                    {
+                        float prefabWidth = previousRectTransform.sizeDelta.x * previousRectTransform.localScale.x; // Adjust width by scale
+                        rectTransform.anchoredPosition = new Vector2(
+                            previousRectTransform.anchoredPosition.x + prefabWidth + 10,
+                            previousRectTransform.anchoredPosition.y
+                        );
+                    }
+                }
+            }
+
+            // Update text
             Transform requirementChild = orderObject.transform.Find("Requirement");
             Transform earnChild = orderObject.transform.Find("Earn");
 
@@ -132,6 +144,23 @@ public class LevelControl : MonoBehaviour
                 {
                     earnText.text = $"{currentOrder.Price}";
                 }
+            }
+        }
+    }
+
+
+    public void RemoveFirstOrder()
+    {
+        if (currentOrders != null && currentOrders.orders.Count > 0)
+        {
+            // Remove the first order from the list
+            currentOrders.orders.RemoveAt(0);
+
+            // Destroy the first spawned order UI element if it exists
+            if (spawnedOrders.Count > 0)
+            {
+                Destroy(spawnedOrders[0]);
+                spawnedOrders.RemoveAt(0);
             }
         }
     }
