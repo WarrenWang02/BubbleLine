@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dac05cf28e9e545bb24b515ec8916b, type: 3}
   m_Name: Tutorial3Dialogs
   m_EditorClassIdentifier: 
-  dialogueEntries: []
+  dialogueEntries:
+  - Good job! I will now teach you about conveyor belts!
+  - "Press the \u201C1/Y\u201D button to toggle conveyor belts into \u201CConstructing
+    Mode\u201D. In this mode, you can continuously drop conveyor belts."
+  - Here is where the spawner is located.
+  - And here is where the output zone.
+  - Now build a conveyor line connecting from the spawner to the output zone, then
+    make sure 3 ingredients through this line!

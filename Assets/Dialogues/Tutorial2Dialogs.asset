@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dac05cf28e9e545bb24b515ec8916b, type: 3}
   m_Name: Tutorial2Dialogs
   m_EditorClassIdentifier: 
-  dialogueEntries: []
+  dialogueEntries:
+  - Great job on the previous task! Now I will teach you everything about deleting
+    objects!
+  - "To delete an object, press the \u201CC/X\u201D button. Now try deleting 5 conveyor
+    belts!"

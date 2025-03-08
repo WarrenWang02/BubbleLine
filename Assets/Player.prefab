@@ -276,6 +276,8 @@ MonoBehaviour:
   playerIndicator: {fileID: 8077634415812527667}
   rotationSpeed: 10
   interactionSystem: {fileID: 0}
+  dialogManager: {fileID: 0}
+  menuManager: {fileID: 0}
   conveyorBeltPrefab: {fileID: 7824910322284308315, guid: 6873a8acdea75ff4091b801196720418, type: 3}
 --- !u!114 &7612138050457067076
 MonoBehaviour:

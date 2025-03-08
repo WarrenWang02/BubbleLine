@@ -2143,6 +2143,9 @@ MonoBehaviour:
   machineRemovalChecker: {fileID: 733036506}
   dialogueUIManager: {fileID: 86496902}
   Tutorial1Dialog: {fileID: 11400000, guid: a25cdf63d3adb6a4f899fe59eadb5b73, type: 2}
+  Tutorial2Dialog: {fileID: 11400000, guid: bec0c9708cea3fb468bd3f1f434595b9, type: 2}
+  Tutorial3Dialog: {fileID: 11400000, guid: 416d71f6425802a4d98afcb21b5a14ae, type: 2}
+  Tutorial4Dialog: {fileID: 11400000, guid: c7e8d6bc2b4eabd44964b64b9839277d, type: 2}
 --- !u!4 &733036504
 Transform:
   m_ObjectHideFlags: 0

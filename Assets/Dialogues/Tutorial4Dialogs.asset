@@ -12,4 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dac05cf28e9e545bb24b515ec8916b, type: 3}
   m_Name: Tutorial4Dialogs
   m_EditorClassIdentifier: 
-  dialogueEntries: []
+  dialogueEntries:
+  - Excellent! You have learned everything you need to know!
+  - Here are some helpful tips before I go, on the middle here is the Time Limit.
+    Make sure that you keep track of the time when you are working!
+  - On the left, you can see different orders made from the customers and they will
+    progressively increase due time.
+  - 'It tells you what order is being requested, the rewards you get after completing
+    it, and possible time constraints for a specific order. '
+  - If you finish an order quickly, you could probably get more rewards from it!
+  - On the right is the Money and Ranking System, it records how much you earned
+    for this level, the highest rank for each level will be 3 stars.
+  - That is all! Good luck out there!
