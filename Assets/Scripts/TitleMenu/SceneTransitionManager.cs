@@ -18,18 +18,51 @@ public class SceneTransitionManager : MonoBehaviour
     [SerializeField] private Collider startGameTriggerZone;  // Assign Start Game Trigger
     [SerializeField] private Collider exitTriggerZone;       // Assign Exit Trigger
 
+    [Header("Visual Feedback - Start Game Zone")]
+    [SerializeField] private SpriteRenderer startGameSprite; // Assign sprite for start zone
+    [SerializeField] private Color startGameTargetColor = Color.green; // Color when ready
+    private Color startGameOriginalColor; // Store original color
+
+    [Header("Visual Feedback - Remove Player Zone")]
+    [SerializeField] private SpriteRenderer removePlayerSprite; // Assign sprite for remove zone
+    [SerializeField] private Color removePlayerTargetColor = Color.red; // Color when removing player
+    private Color removePlayerOriginalColor; // Store original color
+
+    [Header("Settings")]
+    [SerializeField] private float checkDuration = 3f; // Adjustable waiting time
+
+    private float startGameTimer = 0f;
+    private float removePlayerTimer = 0f;
+
+    private void Start()
+    {
+        if (startGameSprite != null)
+        {
+            startGameOriginalColor = startGameSprite.color; // Store original color at start
+        }
+
+        if (removePlayerSprite != null)
+        {
+            removePlayerOriginalColor = removePlayerSprite.color; // Store original color at start
+        }
+    }
+
     private void Update()
     {
         CheckStartGameZone();
         CheckRemovePlayerZone();
+        UpdateSpriteColors();
     }
 
     private void CheckStartGameZone()
     {
-        // Get all active players
         PlayerInput[] activePlayers = FindObjectsOfType<PlayerInput>();
 
-        if (activePlayers.Length == 0) return; // No players, do nothing
+        if (activePlayers.Length == 0)
+        {
+            startGameTimer = 0f; // Reset timer if no players
+            return;
+        }
 
         bool allInStartZone = true;
 
@@ -44,22 +77,39 @@ public class SceneTransitionManager : MonoBehaviour
 
         if (allInStartZone)
         {
-            Debug.Log("All players in Start Zone! Starting game...");
-            TriggerSceneChange("Level1Scene");
+            startGameTimer += Time.deltaTime;
+
+            if (startGameTimer >= checkDuration)
+            {
+                Debug.Log("All players in Start Zone for " + checkDuration + " seconds! Starting game...");
+                TriggerSceneChange("Level1Scene");
+            }
+        }
+        else
+        {
+            startGameTimer = 0f; // Reset if condition fails
         }
     }
 
     private void CheckRemovePlayerZone()
     {
-        // Get all active players
         PlayerInput[] activePlayers = FindObjectsOfType<PlayerInput>();
 
         foreach (var player in activePlayers)
         {
             if (IsPlayerInTrigger(player, exitTriggerZone))
             {
-                Debug.Log($"Player {player.playerIndex} exited! Removing from input system.");
-                RemovePlayer(player);
+                removePlayerTimer += Time.deltaTime;
+
+                if (removePlayerTimer >= checkDuration)
+                {
+                    Debug.Log($"Player {player.playerIndex} stayed in Exit Zone for {checkDuration} seconds. Removing.");
+                    RemovePlayer(player);
+                }
+            }
+            else
+            {
+                removePlayerTimer = 0f; // Reset if player leaves
             }
         }
     }
@@ -75,12 +125,25 @@ public class SceneTransitionManager : MonoBehaviour
         Debug.Log($"Player {player.playerIndex} removed.");
     }
 
+    private void UpdateSpriteColors()
+    {
+        if (startGameSprite != null)
+        {
+            float startProgress = Mathf.Clamp01(startGameTimer / checkDuration);
+            startGameSprite.color = Color.Lerp(startGameOriginalColor, startGameTargetColor, startProgress);
+        }
+
+        if (removePlayerSprite != null)
+        {
+            float removeProgress = Mathf.Clamp01(removePlayerTimer / checkDuration);
+            removePlayerSprite.color = Color.Lerp(removePlayerOriginalColor, removePlayerTargetColor, removeProgress);
+        }
+    }
+
     public void TriggerSceneChange(string sceneName)
     {
-        // Clear previous data before registering new players
         RegisteredPlayers.Clear();
 
-        // Find all active PlayerInput components in the scene
         PlayerInput[] activePlayers = FindObjectsOfType<PlayerInput>();
 
         foreach (PlayerInput player in activePlayers)
@@ -92,10 +155,7 @@ public class SceneTransitionManager : MonoBehaviour
             });
         }
 
-        // Debug log to check what is saved
         Debug.Log($"Transitioning with {RegisteredPlayers.Count} players.");
-
-        // Load the new scene
         SceneManager.LoadScene(sceneName);
     }
 }
