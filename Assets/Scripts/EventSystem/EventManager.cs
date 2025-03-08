@@ -14,6 +14,9 @@ public class EventManager : MonoBehaviour
 
     [SerializeField] private DialogueUIManager dialogueUIManager;
     [SerializeField] private DialogueData Tutorial1Dialog;
+    [SerializeField] private DialogueData Tutorial2Dialog;
+    [SerializeField] private DialogueData Tutorial3Dialog;
+    [SerializeField] private DialogueData Tutorial4Dialog;
     private void Start()
     {
         // This part is one time use like, not modular engough, if needed, make it better later.
@@ -53,7 +56,7 @@ public class EventManager : MonoBehaviour
     public void Tutorial1Trigger()
     {
         EnableAndRegisterMachines(tutorial1Container);
-        dialogueUIManager.StartDialogue(Tutorial1Dialog);
+        dialogueUIManager.StartDialogue(Tutorial1Dialog); // Dialogue1 start
 
         // Start machine placement detection after Tutorial 1 is triggered
         machinePlacementChecker.StartDetection();
@@ -63,6 +66,7 @@ public class EventManager : MonoBehaviour
     {
         DisableAndDeregisterMachines(tutorial1Container);
         EnableAndRegisterMachines(tutorial2Container);
+        dialogueUIManager.StartDialogue(Tutorial2Dialog); // Dialogue2 start
 
         // Add tutorial2 machines to the removal checker
         foreach (Transform machine in tutorial2Container)
@@ -81,6 +85,7 @@ public class EventManager : MonoBehaviour
     {
         DisableAndDeregisterMachines(tutorial2Container);
         EnableAndRegisterMachines(tutorial3Container);
+        dialogueUIManager.StartDialogue(Tutorial3Dialog); // Dialogue3 start
     }
 
     private void EnableAndRegisterMachines(Transform Container)

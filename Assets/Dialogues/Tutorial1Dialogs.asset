@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Tutorial1Dialogs
   m_EditorClassIdentifier: 
   dialogueEntries:
-  - "First Line\t1First Line\t1First Line\t1First Line\t1First Line\t1First Line\t1First
-    Li"
-  - "Second Line\tSecond Line\tSecond Line\tSecond Line\tSecond Line\t"
+  - "\u201CHey there! It\u2019s your friendly guide! For this tutorial I will teach
+    you how to grab an object!"
+  - "To grab an object, press the \u201CE/A\u201D button. While holding an object,
+    you can rotate the object by pressing the \u201CR/B\u201D button. "
+  - Now go on and move 3 of those machines to the destinated area!
