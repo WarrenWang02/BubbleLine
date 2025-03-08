@@ -653,6 +653,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startGameTriggerZone: {fileID: 153009898}
   exitTriggerZone: {fileID: 55632402}
+  startGameSprite: {fileID: 195632282}
+  startGameTargetColor: {r: 0.36320752, g: 1, b: 0.36320752, a: 1}
+  removePlayerSprite: {fileID: 135271120}
+  removePlayerTargetColor: {r: 0.49803922, g: 0.004538993, b: 0.4695834, a: 1}
+  checkDuration: 2
 --- !u!1 &874209136
 GameObject:
   m_ObjectHideFlags: 0
