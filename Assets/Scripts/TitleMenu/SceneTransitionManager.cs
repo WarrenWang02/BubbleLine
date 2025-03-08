@@ -52,6 +52,7 @@ public class SceneTransitionManager : MonoBehaviour
         CheckStartGameZone();
         CheckRemovePlayerZone();
         UpdateSpriteColors();
+        UpdateRemovePlayerSprite(); // Ensure this updates dynamically
     }
 
     private void CheckStartGameZone()
@@ -91,25 +92,40 @@ public class SceneTransitionManager : MonoBehaviour
         }
     }
 
+    private Dictionary<int, float> playerTimers = new Dictionary<int, float>(); // Tracks removal timers per player
+
     private void CheckRemovePlayerZone()
     {
         PlayerInput[] activePlayers = FindObjectsOfType<PlayerInput>();
 
         foreach (var player in activePlayers)
         {
+            int playerID = player.playerIndex;
+
             if (IsPlayerInTrigger(player, exitTriggerZone))
             {
-                removePlayerTimer += Time.deltaTime;
-
-                if (removePlayerTimer >= checkDuration)
+                // If the player is inside the exit zone, increase their individual timer
+                if (!playerTimers.ContainsKey(playerID))
                 {
-                    Debug.Log($"Player {player.playerIndex} stayed in Exit Zone for {checkDuration} seconds. Removing.");
+                    playerTimers[playerID] = 0f; // Initialize if not tracked
+                }
+                
+                playerTimers[playerID] += Time.deltaTime;
+
+                if (playerTimers[playerID] >= checkDuration)
+                {
+                    Debug.Log($"Player {playerID} stayed in Exit Zone for {checkDuration} seconds. Removing.");
                     RemovePlayer(player);
+                    playerTimers.Remove(playerID); // Remove from dictionary
                 }
             }
             else
             {
-                removePlayerTimer = 0f; // Reset if player leaves
+                // If the player leaves before the timer completes, reset their timer
+                if (playerTimers.ContainsKey(playerID))
+                {
+                    playerTimers.Remove(playerID);
+                }
             }
         }
     }
@@ -122,7 +138,7 @@ public class SceneTransitionManager : MonoBehaviour
     private void RemovePlayer(PlayerInput player)
     {
         Destroy(player.gameObject); // Remove player object from the scene
-        Debug.Log($"Player {player.playerIndex} removed.");
+        Debug.Log($"Player {player.playerIndex} GameObject destroyed.");
     }
 
     private void UpdateSpriteColors()
@@ -157,5 +173,25 @@ public class SceneTransitionManager : MonoBehaviour
 
         Debug.Log($"Transitioning with {RegisteredPlayers.Count} players.");
         SceneManager.LoadScene(sceneName);
+    }
+
+    private void UpdateRemovePlayerSprite()
+    {
+        if (removePlayerSprite == null) return; // Ensure there's a sprite assigned
+
+        // Find the highest progress among all players still in the zone
+        float highestProgress = 0f;
+
+        foreach (var time in playerTimers.Values)
+        {
+            float progress = time / checkDuration;
+            if (progress > highestProgress)
+            {
+                highestProgress = progress;
+            }
+        }
+
+        // Apply the highest progress to the sprite color transition
+        removePlayerSprite.color = Color.Lerp(removePlayerOriginalColor, removePlayerTargetColor, highestProgress);
     }
 }
