@@ -7,6 +7,7 @@ TagManager:
   - machine
   - Ingredient
   - InGameUI
+  - Output
   layers:
   - Default
   - TransparentFX

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class LevelControl : MonoBehaviour
 {
     [SerializeField] private float LevelTime = 600f; // Default 10 minutes
-    [SerializeField] private bool levelActive = true; // Main control for level status
+    [SerializeField] private bool levelActive = false; // Main control for level status
     [SerializeField] private GameObject inGameUI; // Bind in the Inspector
     [SerializeField] private TextMeshProUGUI levelTimerText; // Bind TextMeshPro component
     [SerializeField] private OrderItem currentOrders; // Bind manually in the Inspector
@@ -29,14 +29,7 @@ public class LevelControl : MonoBehaviour
 
     private void Start()
     {
-        if (levelActive)
-        {
-            StartLevel();
-        }
-
-        // Start the order countdown
-        StartCoroutine(UpdateOrderTimers());
-
+        levelActive = false;
         UpdateEarnedUI();
         UpdateRankingUI();
     }
@@ -45,8 +38,11 @@ public class LevelControl : MonoBehaviour
     {
         if (!levelActive || LevelTime <= 0) return;
 
-        // Countdown time every frame
-        LevelTime -= Time.deltaTime;
+        if (levelActive) 
+        {
+            // Countdown time every frame
+            LevelTime -= Time.deltaTime;
+        }
 
         // Ensure level time never goes below 0
         if (LevelTime < 0) LevelTime = 0;
@@ -73,6 +69,9 @@ public class LevelControl : MonoBehaviour
         {
             inGameUI.SetActive(true);
         }
+
+        // Start the order countdown
+        StartCoroutine(UpdateOrderTimers());
     }
 
     public void StopLevel()

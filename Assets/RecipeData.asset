@@ -20,10 +20,10 @@ MonoBehaviour:
     - ingredientName: tea
       requiredAmount: 1
     outputPrefab: {fileID: 7089454742129521831, guid: e6d982b6d89778f47a3ab405bb8091e1, type: 3}
-  - recipeName: BubbleTea
+  - recipeName: MilkBubbleTea
     ingredients:
     - ingredientName: bubble
       requiredAmount: 2
     - ingredientName: tea
       requiredAmount: 1
-    outputPrefab: {fileID: 7089454742129521831, guid: e6d982b6d89778f47a3ab405bb8091e1, type: 3}
+    outputPrefab: {fileID: 7089454742129521831, guid: 2f851feb6f9eabc4db1421f2326432e2, type: 3}

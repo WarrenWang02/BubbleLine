@@ -21,8 +21,11 @@ public class EventManager : MonoBehaviour
     [SerializeField] private DialogueData Tutorial2Dialog;
     [SerializeField] private DialogueData Tutorial3Dialog;
     [SerializeField] private DialogueData Tutorial4Dialog;
+    [SerializeField] private LevelControl levelcontrol;
 
     public static event Action OnTutorial3Triggered; // Event for Tutorial3Trigger
+
+    private bool isWaitingForDialogue4End = false; // Flag to track when Dialogue 4 is running
     private void Start()
     {
         // This part is one time use like, not modular engough, if needed, make it better later.
@@ -62,11 +65,13 @@ public class EventManager : MonoBehaviour
     private void OnEnable()
     {
         IngredientDeadzone.OnThreeMilksReceived += Level1Trigger;
+        DialogueUIManager.OnDialogueEnding += HandleDialogueEnding;
     }
 
     private void OnDisable()
     {
         IngredientDeadzone.OnThreeMilksReceived -= Level1Trigger;
+        DialogueUIManager.OnDialogueEnding -= HandleDialogueEnding;
     }
 
     public void Tutorial1Trigger()
@@ -113,9 +118,23 @@ public class EventManager : MonoBehaviour
         // Unsubscribe to prevent repeated triggers
         IngredientDeadzone.OnThreeMilksReceived -= Level1Trigger;
 
-        dialogueUIManager.StartDialogue(Tutorial4Dialog); // Dialogue3 start
+        // Start Dialogue 4 and wait for it to end before starting Level 1
+        dialogueUIManager.StartDialogue(Tutorial4Dialog);
+        isWaitingForDialogue4End = true;
+
+        // Machines transition immediately, but Level 1 starts after dialogue ends
         DisableAndDeregisterMachines(tutorial3Container);
         EnableAndRegisterMachines(level1Container);
+    }
+    
+    private void HandleDialogueEnding(DialogueData endedDialogue)
+    {
+        if (isWaitingForDialogue4End && endedDialogue == Tutorial4Dialog)
+        {
+            isWaitingForDialogue4End = false;
+            Debug.Log("Dialogue 4 ended. Starting Level 1.");
+            levelcontrol.StartLevel();
+        }
     }
 
     private void EnableAndRegisterMachines(Transform Container)
@@ -190,7 +209,7 @@ public class EventManager : MonoBehaviour
                 }
             }
         }
-        
+
         // Destroy ConveyorBelt objects after iterating to avoid modifying the list during iteration
         foreach (GameObject conveyorBelt in conveyorBeltsToRemove)
         {

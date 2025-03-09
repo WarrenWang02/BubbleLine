@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
-using System.Linq;
 
 public class MachineProcessor : MonoBehaviour
 {
@@ -267,6 +266,13 @@ public class MachineProcessor : MonoBehaviour
 
         // Move to the next index, loop back to 0 if at the end
         selectedRecipeIndex = (selectedRecipeIndex + 1) % recipeData.recipes.Count;
+
+        // Get the selected recipe
+        RecipeData.Recipe selectedRecipe = recipeData.recipes[selectedRecipeIndex];
+
+        // Update UI and Sprite to reflect the new recipe
+        UpdateIngredientUI();
+        UpdateRecipeSprite(selectedRecipe);
 
         Debug.Log($"Selected recipe changed to: {recipeData.recipes[selectedRecipeIndex].recipeName}");
     }
