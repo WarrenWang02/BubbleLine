@@ -30,7 +30,7 @@ public class Level1OrderControl : MonoBehaviour
         float levelTime = levelControl.GetLevelTime(); // Continuously sync level time
 
         // Check if we are due to add a new order based on time progression
-        if (currentPhase < 3 && (levelTime <= lastCheckTime - 30f) || currentOrder.orders.Count < currentPhase)
+        if (currentPhase < 3 && (levelTime <= lastCheckTime - 30f))
         {
             AddNextOrder();
             lastCheckTime = levelTime; // Reset last check time
