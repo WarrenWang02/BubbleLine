@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class IngredientDeadzone : MonoBehaviour
@@ -26,7 +27,7 @@ public class IngredientDeadzone : MonoBehaviour
     {
         if (other.CompareTag("Ingredient"))
         {
-            string ingredientName = NormalizeIngredientName(other.name);
+            string ingredientName = GetNormalizedIngredientName(other.name);
             UpdateStoredAmount(ingredientName);
             Debug.Log($"Processed {ingredientName} in OrderItem.");
 
@@ -46,9 +47,19 @@ public class IngredientDeadzone : MonoBehaviour
         }
     }
 
-    private string NormalizeIngredientName(string rawName)
+    private string GetNormalizedIngredientName(string rawName)
     {
-        return rawName.ToLower().Trim();  // Simple normalization, modify as needed
+        // Convert to lowercase for consistency
+        string normalized = rawName.ToLower();
+
+        // Remove "(Clone)" if present
+        normalized = Regex.Replace(normalized, @"\s*\(clone\)", "");
+
+        // Remove any extra numbers in parentheses (like "(1)", "(2)")
+        normalized = Regex.Replace(normalized, @"\s*\(\d+\)", "");
+
+        // Trim extra spaces
+        return normalized.Trim();
     }
 
     private void UpdateStoredAmount(string ingredientName)
@@ -61,7 +72,7 @@ public class IngredientDeadzone : MonoBehaviour
 
         foreach (Orders order in orderItemAsset.orders)
         {
-            if (order.Product != null && NormalizeIngredientName(order.Product.name) == ingredientName)
+            if (order.Product != null && GetNormalizedIngredientName(order.Product.name) == ingredientName)
             {
                 order.RequireAmount -= 1;
                 return;

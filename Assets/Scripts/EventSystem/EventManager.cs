@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EventManager : MonoBehaviour
 {
@@ -110,7 +112,7 @@ public class EventManager : MonoBehaviour
     {
         // Unsubscribe to prevent repeated triggers
         IngredientDeadzone.OnThreeMilksReceived -= Level1Trigger;
-        
+
         dialogueUIManager.StartDialogue(Tutorial4Dialog); // Dialogue3 start
         DisableAndDeregisterMachines(tutorial3Container);
         EnableAndRegisterMachines(level1Container);
@@ -154,6 +156,7 @@ public class EventManager : MonoBehaviour
             return;
         }
 
+        // Remove all machines from the specified container
         foreach (Transform machine in Container)
         {
             if (machine.CompareTag("machine"))
@@ -166,6 +169,33 @@ public class EventManager : MonoBehaviour
                     gridObjectsAsset.gridObjects.Remove(cellPosition);
                 }
             }
+        }
+
+        // Find all ConveyorBelts that are direct children of the scene root
+        GameObject[] rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+        List<GameObject> conveyorBeltsToRemove = new List<GameObject>();
+        foreach (GameObject rootObject in rootObjects)
+        {
+            // Only process the object if it is a ConveyorBelt at the root level
+            if (rootObject.name.Contains("ConveyorBelt"))
+            {
+                Vector3Int beltPosition = grid.WorldToCell(rootObject.transform.position);
+                beltPosition.y = 0;
+
+                if (gridObjectsAsset.gridObjects.ContainsKey(beltPosition))
+                {
+                    gridObjectsAsset.gridObjects.Remove(beltPosition);
+                    conveyorBeltsToRemove.Add(rootObject);
+                    Debug.Log($"[DEBUG] Root-level ConveyorBelt at {beltPosition} removed from dictionary.");
+                }
+            }
+        }
+        
+        // Destroy ConveyorBelt objects after iterating to avoid modifying the list during iteration
+        foreach (GameObject conveyorBelt in conveyorBeltsToRemove)
+        {
+            Destroy(conveyorBelt);
+            Debug.Log($"[DEBUG] ConveyorBelt '{conveyorBelt.name}' destroyed.");
         }
 
         // Deactivate the container after removing machines from the grid
