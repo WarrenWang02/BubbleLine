@@ -15,13 +15,13 @@ public class Level1OrderControl : MonoBehaviour
     private void Start()
     {
         lastCheckTime = levelControl.GetLevelTime(); // Get initial level time
-        
+
         // Ensure currentOrder starts empty
         if (currentOrder.orders != null)
         {
             currentOrder.orders.Clear();
         }
-        
+
         AddNextOrder(); // Start with the first order
     }
 
@@ -47,8 +47,9 @@ public class Level1OrderControl : MonoBehaviour
     {
         if (currentPhase < Level1Orders.orders.Count)
         {
-            currentOrder.orders.Add(Level1Orders.orders[currentPhase]);
-            activeOrders.Add(Level1Orders.orders[currentPhase]);
+            Orders newOrder = CloneOrder(Level1Orders.orders[currentPhase]); // Clone instead of referencing
+            currentOrder.orders.Add(newOrder);
+            activeOrders.Add(newOrder);
             currentPhase++;
         }
     }
@@ -71,10 +72,23 @@ public class Level1OrderControl : MonoBehaviour
             cumulative += order.AppearRate;
             if (randomValue < cumulative)
             {
-                currentOrder.orders.Add(order);
-                activeOrders.Add(order);
+                Orders newOrder = CloneOrder(order); // Clone instead of referencing
+                currentOrder.orders.Add(newOrder);
+                activeOrders.Add(newOrder);
                 break;
             }
         }
+    }
+
+    private Orders CloneOrder(Orders originalOrder)
+    {
+        return new Orders
+        {
+            Product = originalOrder.Product, // Reference is fine since it's a prefab
+            RequireAmount = originalOrder.RequireAmount,
+            Price = originalOrder.Price,
+            Time = originalOrder.Time,
+            AppearRate = originalOrder.AppearRate,
+        };
     }
 }

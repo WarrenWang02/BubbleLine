@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class IngredientDeadzone : MonoBehaviour
 {
-    private List<string> recordedIngredients = new List<string>();
+    [SerializeField] private OrderItem orderItemAsset; // Assign in Inspector
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Ingredient"))
         {
             string ingredientName = NormalizeIngredientName(other.name);
-            recordedIngredients.Add(ingredientName);
-            Debug.Log($"Recorded {ingredientName}. Total count: {recordedIngredients.Count}");
+            UpdateStoredAmount(ingredientName);
+            Debug.Log($"Processed {ingredientName} in OrderItem.");
 
             Destroy(other.gameObject);  // Remove the ingredient
         }
@@ -22,13 +22,24 @@ public class IngredientDeadzone : MonoBehaviour
         return rawName.ToLower().Trim();  // Simple normalization, modify as needed
     }
 
-    public List<string> GetRecordedIngredients()
+    private void UpdateStoredAmount(string ingredientName)
     {
-        return new List<string>(recordedIngredients); // Return a copy to prevent modification
-    }
+        if (orderItemAsset == null)
+        {
+            Debug.LogError("OrderItem asset is not assigned!");
+            return;
+        }
 
-    public void ClearRecordedIngredients()
-    {
-        recordedIngredients.Clear();
+        foreach (Orders order in orderItemAsset.orders)
+        {
+            if (order.Product != null && NormalizeIngredientName(order.Product.name) == ingredientName)
+            {
+                order.RequireAmount -= 1;
+                //Debug.Log($"Updated {order.Product.name}: StoredAmount is now {order.StoredAmount}");
+                return;
+            }
+        }
+
+        Debug.Log($"No matching product found for {ingredientName} in OrderItem.");
     }
 }
