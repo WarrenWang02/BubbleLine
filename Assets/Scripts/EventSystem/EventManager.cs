@@ -22,6 +22,7 @@ public class EventManager : MonoBehaviour
     [SerializeField] private DialogueData Tutorial3Dialog;
     [SerializeField] private DialogueData Tutorial4Dialog;
     [SerializeField] private LevelControl levelcontrol;
+    [SerializeField] private GameObject TestUI;
 
     public static event Action OnTutorial3Triggered; // Event for Tutorial3Trigger
 
@@ -76,6 +77,7 @@ public class EventManager : MonoBehaviour
 
     public void Tutorial1Trigger()
     {
+        TestUI.SetActive(false);
         EnableAndRegisterMachines(tutorial1Container);
         dialogueUIManager.StartDialogue(Tutorial1Dialog); // Dialogue1 start
 

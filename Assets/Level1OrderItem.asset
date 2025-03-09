@@ -19,13 +19,13 @@ MonoBehaviour:
     Time: 180
     AppearRate: 25
     StoredAmount: 0
-  - Product: {fileID: 7089454742129521831, guid: 8fed1fa48c7dfad459cdc56820890808, type: 3}
+  - Product: {fileID: 7089454742129521831, guid: 7da88485b3d8a7a47a4237efd3954811, type: 3}
     RequireAmount: 10
     Price: 25
     Time: 200
     AppearRate: 25
     StoredAmount: 0
-  - Product: {fileID: 7089454742129521831, guid: a590440d380aa0649a9a892880ccac1d, type: 3}
+  - Product: {fileID: 7089454742129521831, guid: 2f851feb6f9eabc4db1421f2326432e2, type: 3}
     RequireAmount: 8
     Price: 32
     Time: 220
@@ -37,7 +37,7 @@ MonoBehaviour:
     Time: 300
     AppearRate: 17.5
     StoredAmount: 0
-  - Product: {fileID: 7089454742129521831, guid: 8fed1fa48c7dfad459cdc56820890808, type: 3}
+  - Product: {fileID: 7089454742129521831, guid: 7da88485b3d8a7a47a4237efd3954811, type: 3}
     RequireAmount: 15
     Price: 38
     Time: 250
