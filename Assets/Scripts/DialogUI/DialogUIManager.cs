@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using System;
 
 public class DialogueUIManager : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class DialogueUIManager : MonoBehaviour
     private DialogueData currentDialogue;
     private int dialogueIndex;
     private bool isDialogueActive = false;
+
+    // Event to notify when dialogue is ending (before setting to null)
+    public static event Action<DialogueData> OnDialogueEnding;
 
     private void Start()
     {
@@ -56,6 +60,12 @@ public class DialogueUIManager : MonoBehaviour
 
     public void EndDialogue()
     {
+        if (currentDialogue != null)
+        {
+            // Fire event BEFORE setting currentDialogue to null
+            OnDialogueEnding?.Invoke(currentDialogue);
+        }
+
         isDialogueActive = false;
         ToggleDialogue(false);
         currentDialogue = null;
