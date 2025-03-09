@@ -145,6 +145,9 @@ public class LevelControl : MonoBehaviour
             Destroy(spawnedOrders[index]); // Remove UI element
             spawnedOrders.RemoveAt(index);
         }
+
+        // Immediately reposition remaining orders
+        UpdateOrderDisplay();
     }
 
     private void UpdateOrderDisplay()
@@ -167,7 +170,10 @@ public class LevelControl : MonoBehaviour
             spawnedOrders.Add(newOrder);
         }
 
-        // Update position, text, and progress bar of each spawned order
+        // Get the original prefab's position (only use for the first order)
+        Vector2 startPosition = orderPrefab.GetComponent<RectTransform>().anchoredPosition;
+
+        // Correctly position orders based on their **index**
         for (int i = 0; i < spawnedOrders.Count; i++)
         {
             if (i >= currentOrders.orders.Count) break; // Prevent errors if list changes
@@ -175,7 +181,7 @@ public class LevelControl : MonoBehaviour
             GameObject orderObject = spawnedOrders[i];
             Orders currentOrder = currentOrders.orders[i];
 
-            //Store the Initial Time if not already recorded
+            // Store the Initial Time if not already recorded
             if (!initialOrderTimes.ContainsKey(currentOrder))
             {
                 initialOrderTimes[currentOrder] = currentOrder.Time; // Save initial time
@@ -183,22 +189,12 @@ public class LevelControl : MonoBehaviour
 
             float initialTime = initialOrderTimes[currentOrder]; // Get the starting time
 
-            // Set position based on order index
+            // Use the original prefab's position as the base for the first order
             RectTransform rectTransform = orderObject.GetComponent<RectTransform>();
             if (rectTransform != null)
             {
-                if (i > 0) // Only adjust position for the second order onwards
-                {
-                    RectTransform previousRectTransform = spawnedOrders[i - 1].GetComponent<RectTransform>();
-                    if (previousRectTransform != null)
-                    {
-                        float prefabWidth = previousRectTransform.sizeDelta.x * previousRectTransform.localScale.x; // Adjust width by scale
-                        rectTransform.anchoredPosition = new Vector2(
-                            previousRectTransform.anchoredPosition.x + prefabWidth + 10,
-                            previousRectTransform.anchoredPosition.y
-                        );
-                    }
-                }
+                float yOffset = startPosition.y - (i * (rectTransform.sizeDelta.y * rectTransform.localScale.y + 10)); // Stack orders downward
+                rectTransform.anchoredPosition = new Vector2(startPosition.x, yOffset);
             }
 
             // Update text
@@ -219,7 +215,7 @@ public class LevelControl : MonoBehaviour
                 TextMeshProUGUI earnText = earnChild.GetComponent<TextMeshProUGUI>();
                 if (earnText != null)
                 {
-                    earnText.text = $"You will earn: {currentOrder.Price}";
+                    earnText.text = $"Profit: {currentOrder.Price}";
                 }
             }
 
