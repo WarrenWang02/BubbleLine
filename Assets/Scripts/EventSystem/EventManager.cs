@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
@@ -8,6 +9,7 @@ public class EventManager : MonoBehaviour
     [SerializeField] private Transform tutorial1Container; 
     [SerializeField] private Transform tutorial2Container; 
     [SerializeField] private Transform tutorial3Container;
+    [SerializeField] private Transform level1Container;
 
     [SerializeField] private MachinePlacementChecker machinePlacementChecker;
     [SerializeField] private MachineRemovalChecker machineRemovalChecker;
@@ -17,6 +19,8 @@ public class EventManager : MonoBehaviour
     [SerializeField] private DialogueData Tutorial2Dialog;
     [SerializeField] private DialogueData Tutorial3Dialog;
     [SerializeField] private DialogueData Tutorial4Dialog;
+
+    public static event Action OnTutorial3Triggered; // Event for Tutorial3Trigger
     private void Start()
     {
         // This part is one time use like, not modular engough, if needed, make it better later.
@@ -53,6 +57,16 @@ public class EventManager : MonoBehaviour
         }  
     }
 
+    private void OnEnable()
+    {
+        IngredientDeadzone.OnThreeMilksReceived += Level1Trigger;
+    }
+
+    private void OnDisable()
+    {
+        IngredientDeadzone.OnThreeMilksReceived -= Level1Trigger;
+    }
+
     public void Tutorial1Trigger()
     {
         EnableAndRegisterMachines(tutorial1Container);
@@ -86,6 +100,20 @@ public class EventManager : MonoBehaviour
         DisableAndDeregisterMachines(tutorial2Container);
         EnableAndRegisterMachines(tutorial3Container);
         dialogueUIManager.StartDialogue(Tutorial3Dialog); // Dialogue3 start
+
+        // Fire the event
+        OnTutorial3Triggered?.Invoke();
+        Debug.Log("Tutorial3Trigger event fired.");
+    }
+
+    public void Level1Trigger()
+    {
+        // Unsubscribe to prevent repeated triggers
+        IngredientDeadzone.OnThreeMilksReceived -= Level1Trigger;
+        
+        dialogueUIManager.StartDialogue(Tutorial4Dialog); // Dialogue3 start
+        DisableAndDeregisterMachines(tutorial3Container);
+        EnableAndRegisterMachines(level1Container);
     }
 
     private void EnableAndRegisterMachines(Transform Container)
@@ -148,5 +176,4 @@ public class EventManager : MonoBehaviour
 
         Debug.Log($"[DEBUG] Machines from '{Container.name}' disabled and deregistered.");
     }
-
 }
