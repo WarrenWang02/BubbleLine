@@ -9,6 +9,7 @@ public class Orders
     public int Price;
     public float Time;
     public float AppearRate; // How much chance by default it will appear
+    public int StoredAmount;
 }
 
 [CreateAssetMenu(fileName = "OrderItem", menuName = "Game/OrderItem")]
