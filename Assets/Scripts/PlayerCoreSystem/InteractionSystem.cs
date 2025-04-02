@@ -183,39 +183,65 @@ public class InteractionSystem : MonoBehaviour
     {
         if (targetObject == null || testGhostMat == null) return;
 
+        // First check for the main renderer
         Renderer targetRenderer = targetObject.GetComponent<Renderer>();
-        if (targetRenderer == null || targetRenderer.sharedMaterial == null) return;
-
-        // Get the original material from the object
-        Material originalMaterial = targetRenderer.sharedMaterial;
-
-        // Create a new instance of the ghost material to prevent affecting other objects
-        Material newGhostMaterial = new Material(testGhostMat);
-
-        // Check if the original material has an Albedo color and transfer it directly
-        if (originalMaterial.HasProperty("_Color")) // Standard Shader uses _BaseColor
+        if (targetRenderer != null && targetRenderer.sharedMaterial != null)
         {
-            Color originalColor = originalMaterial.GetColor("_Color");
+            // Get the original material from the object
+            Material originalMaterial = targetRenderer.sharedMaterial;
 
-            // Directly transfer the color to both BaseColor and GhostColor
-            if (newGhostMaterial.HasProperty("_Base_Color")) // Ensure GhostColor exists in shader
+            // Create a new instance of the ghost material to prevent affecting other objects
+            Material newGhostMaterial = new Material(testGhostMat);
+
+            // Check if the original material has an Albedo color and transfer it directly
+            if (originalMaterial.HasProperty("_Color")) // Standard Shader uses _BaseColor
             {
-                newGhostMaterial.SetColor("_Base_Color", originalColor);
-            } else {
-                Debug.Log("not found ghostmat's base color");
+                Color originalColor = originalMaterial.GetColor("_Color");
+
+                // Directly transfer the color to both BaseColor and GhostColor
+                if (newGhostMaterial.HasProperty("_Base_Color")) // Ensure GhostColor exists in shader
+                {
+                    newGhostMaterial.SetColor("_Base_Color", originalColor);
+                }
+                else
+                {
+                    Debug.Log("not found ghostmat's base color");
+                }
+                if (newGhostMaterial.HasProperty("_Ghost_Color")) // Ensure GhostColor exists in shader
+                {
+                    newGhostMaterial.SetColor("_Ghost_Color", originalColor);
+                }
+                else
+                {
+                    Debug.Log("not found ghostmat's ghost color");
+                }
             }
-            if (newGhostMaterial.HasProperty("_Ghost_Color")) // Ensure GhostColor exists in shader
-            {
-                newGhostMaterial.SetColor("_Ghost_Color", originalColor);
-            } else {
-                Debug.Log("not found ghostmat's ghost color");
-            }
+
+            // Assign the new ghost material to the target object
+            targetRenderer.material = newGhostMaterial;
         }
 
-        // Assign the new ghost material to the target object
-        targetRenderer.material = newGhostMaterial;
+        // Check for SpriteAttached child object
+        Transform spriteAttachedTransform = targetObject.transform.Find("SpriteAttached");
+        if (spriteAttachedTransform != null)
+        {
+            // Get all SpriteRenderer components under SpriteAttached
+            SpriteRenderer[] spriteRenderers = spriteAttachedTransform.GetComponentsInChildren<SpriteRenderer>(true);
+            
+            foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+            {
+                if (spriteRenderer == null) continue;
+                
+                // Get current color and reduce alpha by half
+                Color originalColor = spriteRenderer.color;
+                Color transparentColor = new Color(originalColor.r, originalColor.g, originalColor.b, originalColor.a * 0.5f);
+                
+                // Apply the transparent color
+                spriteRenderer.color = transparentColor;
+            }
+        }
     }
-
+    
     public void RotateHeldMachine90()
     {
         if (heldMachinePrefab != null)
